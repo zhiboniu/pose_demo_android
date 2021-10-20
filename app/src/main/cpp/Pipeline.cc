@@ -256,7 +256,8 @@ void Detector_KeyPoint::Predict(const cv::Mat &rgbaImage, std::vector<RESULT> *r
   std::vector<std::vector<float>> scale_bs;
   std::vector<cv::Mat> cropimgs;
   RESULT srect = FindMaxRect(results);
-  CropImg(rgbaImage, cropimgs, results, center_bs, scale_bs);
+  std::vector<RESULT> sresult = {srect};
+  CropImg(rgbaImage, cropimgs, *results, center_bs, scale_bs);
   t = GetCurrentTime();
   Preprocess(cropimgs);
   *preprocessTime = GetElapsedTime(t);
@@ -289,7 +290,7 @@ RESULT Detector_KeyPoint::FindMaxRect(std::vector<RESULT> *results) {
 void Detector_KeyPoint::CropImg(const cv::Mat &img, std::vector<cv::Mat> &crop_img, std::vector<RESULT> &results, std::vector<std::vector<float>> &center_bs, std::vector<std::vector<float>> &scale_bs, float expandratio) {
   int w = img.cols;
   int h = img.rows;
-  for (int i=0; i<std::min(results.size(), 8); i++) {
+  for (int i=0; i<std::min(int(results.size()), 4); i++) {
     auto area = results[i];
     int crop_x1 = std::max(0, static_cast<int>(area.x * w));
     int crop_y1 = std::max(0, static_cast<int>(area.y * h));
@@ -502,7 +503,7 @@ bool Pipeline::Process(int inTexureId, int outTextureId, int textureWidth,
                                   &readGLFBOTime);
 
   // Feed the image, run inference and parse the results
-  if (idx%3 == 0 or results.empty()){
+  if (idx%2 == 0 or results.empty()){
     idx = 0;
     results.clear();
     detector_->Predict(rgbaImage, &results, &preprocessTime, &predictTime,
