@@ -23,7 +23,7 @@ Detector::Detector(const std::string &modelDir, const std::string &labelPath,
     : inputWidth_(inputWidth), inputHeight_(inputHeight), inputMean_(inputMean),
       inputStd_(inputStd), scoreThreshold_(scoreThreshold) {
   paddle::lite_api::MobileConfig config;
-  config.set_model_from_file(modelDir + "/model.nb");
+  config.set_model_from_file(modelDir + "/model_det.nb");
   config.set_threads(cpuThreadNum);
   config.set_power_mode(ParsePowerMode(cpuPowerMode));
   predictor_ =
@@ -149,7 +149,7 @@ Detector_KeyPoint::Detector_KeyPoint(const std::string &modelDir, const std::str
     : inputWidth_(inputWidth), inputHeight_(inputHeight), inputMean_(inputMean),
       inputStd_(inputStd), scoreThreshold_(scoreThreshold) {
   paddle::lite_api::MobileConfig config;
-  config.set_model_from_file(modelDir + "/model_keypoint_nh18.nb");
+  config.set_model_from_file(modelDir + "/model_keypoint.nb");
   config.set_threads(cpuThreadNum);
   config.set_power_mode(ParsePowerMode(cpuPowerMode));
   predictor_keypoint_ =
