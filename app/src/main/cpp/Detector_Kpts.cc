@@ -15,14 +15,13 @@
 #include "Detector_Kpts.h"
 #include "postprocess.h"
 
+// KeyPoint Detector
 
-//KeyPoint Detector
-
-Detector_KeyPoint::Detector_KeyPoint(const std::string &modelDir, const std::string &labelPath,
-                   const int cpuThreadNum, const std::string &cpuPowerMode,
-                   int inputWidth, int inputHeight,
-                   const std::vector<float> &inputMean,
-                   const std::vector<float> &inputStd, float scoreThreshold)
+Detector_KeyPoint::Detector_KeyPoint(
+    const std::string &modelDir, const std::string &labelPath,
+    const int cpuThreadNum, const std::string &cpuPowerMode, int inputWidth,
+    int inputHeight, const std::vector<float> &inputMean,
+    const std::vector<float> &inputStd, float scoreThreshold)
     : inputWidth_(inputWidth), inputHeight_(inputHeight), inputMean_(inputMean),
       inputStd_(inputStd), scoreThreshold_(scoreThreshold) {
   paddle::lite_api::MobileConfig config;
@@ -33,7 +32,7 @@ Detector_KeyPoint::Detector_KeyPoint(const std::string &modelDir, const std::str
       paddle::lite_api::CreatePaddlePredictor<paddle::lite_api::MobileConfig>(
           config);
 
-  colorMap_ = GenerateColorMap(20); //coco keypoint number is 17
+  colorMap_ = GenerateColorMap(20); // coco keypoint number is 17
 }
 
 std::vector<cv::Scalar> Detector_KeyPoint::GenerateColorMap(int numOfClasses) {
@@ -61,28 +60,29 @@ void Detector_KeyPoint::Preprocess(std::vector<cv::Mat> &bs_images) {
   std::vector<int64_t> inputShape = {batchsize, 3, inputHeight_, inputWidth_};
   inputTensor->Resize(inputShape);
   auto inputData = inputTensor->mutable_data<float>();
-  for (int i=0; i<batchsize; i++) {
+  for (int i = 0; i < batchsize; i++) {
     cv::Mat resizedRGBAImage;
-    cv::resize(bs_images[i], resizedRGBAImage, cv::Size(inputShape[3], inputShape[2]));
+    cv::resize(bs_images[i], resizedRGBAImage,
+               cv::Size(inputShape[3], inputShape[2]));
     cv::Mat resizedRGBImage;
     cv::cvtColor(resizedRGBAImage, resizedRGBImage, cv::COLOR_BGRA2RGB);
     resizedRGBImage.convertTo(resizedRGBImage, CV_32FC3, 1.0 / 255.0f);
-    auto dst_inptr = inputData + i*(3*inputHeight_*inputWidth_);
-    NHWC3ToNC3HW(reinterpret_cast<const float *>(resizedRGBImage.data), dst_inptr,
-                inputMean_.data(), inputStd_.data(), inputShape[3],
-                inputShape[2]);
+    auto dst_inptr = inputData + i * (3 * inputHeight_ * inputWidth_);
+    NHWC3ToNC3HW(reinterpret_cast<const float *>(resizedRGBImage.data),
+                 dst_inptr, inputMean_.data(), inputStd_.data(), inputShape[3],
+                 inputShape[2]);
   }
   // Set the size of input image
-//  auto sizeTensor = predictor_keypoint_->GetInput(1);
-//  sizeTensor->Resize({1, 2});
-//  auto sizeData = sizeTensor->mutable_data<int32_t>();
-//  sizeData[0] = inputShape[3];
-//  sizeData[1] = inputShape[2];
+  //  auto sizeTensor = predictor_keypoint_->GetInput(1);
+  //  sizeTensor->Resize({1, 2});
+  //  auto sizeData = sizeTensor->mutable_data<int32_t>();
+  //  sizeData[0] = inputShape[3];
+  //  sizeData[1] = inputShape[2];
 }
 
 void Detector_KeyPoint::Postprocess(std::vector<RESULT_KEYPOINT> *results,
-                                   std::vector<std::vector<float>>& center_bs,
-                                   std::vector<std::vector<float>>& scale_bs) {
+                                    std::vector<std::vector<float>> &center_bs,
+                                    std::vector<std::vector<float>> &scale_bs) {
   auto outputTensor = predictor_keypoint_->GetOutput(0);
   auto outputdata = outputTensor->data<float>();
   auto output_shape = outputTensor->shape();
@@ -102,15 +102,8 @@ void Detector_KeyPoint::Postprocess(std::vector<RESULT_KEYPOINT> *results,
   std::vector<float> preds(output_shape[1] * 3, 0);
 
   for (int batchid = 0; batchid < output_shape[0]; batchid++) {
-    get_final_preds(output,
-                    output_shape,
-                    idxout,
-                    idx_shape,
-                    center_bs[batchid],
-                    scale_bs[batchid],
-                    preds,
-                    batchid,
-                    this->use_dark);
+    get_final_preds(output, output_shape, idxout, idx_shape, center_bs[batchid],
+                    scale_bs[batchid], preds, batchid, this->use_dark);
     RESULT_KEYPOINT result_item;
     result_item.num_joints = output_shape[1];
     result_item.keypoints.clear();
@@ -123,10 +116,12 @@ void Detector_KeyPoint::Postprocess(std::vector<RESULT_KEYPOINT> *results,
   }
 }
 
-void Detector_KeyPoint::Predict(const cv::Mat &rgbaImage, std::vector<RESULT> *results, std::vector<RESULT_KEYPOINT> *results_kpts, 
-                       double *preprocessTime, double *predictTime,
-                       double *postprocessTime){
-  if(results->empty())
+void Detector_KeyPoint::Predict(const cv::Mat &rgbaImage,
+                                std::vector<RESULT> *results,
+                                std::vector<RESULT_KEYPOINT> *results_kpts,
+                                double *preprocessTime, double *predictTime,
+                                double *postprocessTime) {
+  if (results->empty())
     return;
   auto t = GetCurrentTime();
   std::vector<std::vector<float>> center_bs;
@@ -153,8 +148,9 @@ void Detector_KeyPoint::Predict(const cv::Mat &rgbaImage, std::vector<RESULT> *r
 
 RESULT Detector_KeyPoint::FindMaxRect(std::vector<RESULT> *results) {
   int maxid = 0;
-  for(int i=0; i<results->size();i++){
-    if ((*results)[i].h + (*results)[i].w > (*results)[maxid].h + (*results)[maxid].w){
+  for (int i = 0; i < results->size(); i++) {
+    if ((*results)[i].h + (*results)[i].w >
+        (*results)[maxid].h + (*results)[maxid].w) {
       maxid = i;
     }
   }
@@ -164,51 +160,60 @@ RESULT Detector_KeyPoint::FindMaxRect(std::vector<RESULT> *results) {
   return (*results)[maxid];
 }
 
-void Detector_KeyPoint::CropImg(const cv::Mat &img, std::vector<cv::Mat> &crop_img, std::vector<RESULT> &results, std::vector<std::vector<float>> &center_bs, std::vector<std::vector<float>> &scale_bs, float expandratio) {
+void Detector_KeyPoint::CropImg(const cv::Mat &img,
+                                std::vector<cv::Mat> &crop_img,
+                                std::vector<RESULT> &results,
+                                std::vector<std::vector<float>> &center_bs,
+                                std::vector<std::vector<float>> &scale_bs,
+                                float expandratio) {
   int w = img.cols;
   int h = img.rows;
-  for (int i=0; i<std::min(int(results.size()), 4); i++) {
+  for (int i = 0; i < std::min(int(results.size()), 4); i++) {
     auto area = results[i];
     int crop_x1 = std::max(0, static_cast<int>(area.x * w));
     int crop_y1 = std::max(0, static_cast<int>(area.y * h));
-    int crop_x2 = std::min(img.cols -1, static_cast<int>((area.x + area.w)*w));
-    int crop_y2 = std::min(img.rows - 1, static_cast<int>((area.y + area.h)*h));
-    int center_x = (crop_x1 + crop_x2)/2.;
-    int center_y = (crop_y1 + crop_y2)/2.;
-    int half_h = (crop_y2 - crop_y1)/2.;
-    int half_w = (crop_x2 - crop_x1)/2.;
+    int crop_x2 =
+        std::min(img.cols - 1, static_cast<int>((area.x + area.w) * w));
+    int crop_y2 =
+        std::min(img.rows - 1, static_cast<int>((area.y + area.h) * h));
+    int center_x = (crop_x1 + crop_x2) / 2.;
+    int center_y = (crop_y1 + crop_y2) / 2.;
+    int half_h = (crop_y2 - crop_y1) / 2.;
+    int half_w = (crop_x2 - crop_x1) / 2.;
 
-    //adjust h or w to keep image ratio, expand the shorter edge
-    if (half_h*3 > half_w*4){
-      half_w = static_cast<int>(half_h*0.75);
-    }
-    else{
-      half_h = static_cast<int>(half_w*4/3);
+    // adjust h or w to keep image ratio, expand the shorter edge
+    if (half_h * 3 > half_w * 4) {
+      half_w = static_cast<int>(half_h * 0.75);
+    } else {
+      half_h = static_cast<int>(half_w * 4 / 3);
     }
 
-    int roi_x1 = center_x - static_cast<int>(half_w*(1+expandratio));
-    int roi_y1 = center_y - static_cast<int>(half_h*(1+expandratio));
-    int roi_x2 = center_x + static_cast<int>(half_w*(1+expandratio));
-    int roi_y2 = center_y + static_cast<int>(half_h*(1+expandratio));
+    int roi_x1 = center_x - static_cast<int>(half_w * (1 + expandratio));
+    int roi_y1 = center_y - static_cast<int>(half_h * (1 + expandratio));
+    int roi_x2 = center_x + static_cast<int>(half_w * (1 + expandratio));
+    int roi_y2 = center_y + static_cast<int>(half_h * (1 + expandratio));
     crop_x1 = std::max(0, roi_x1);
     crop_y1 = std::max(0, roi_y1);
-    crop_x2 = std::min(img.cols -1, roi_x2);
+    crop_x2 = std::min(img.cols - 1, roi_x2);
     crop_y2 = std::min(img.rows - 1, roi_y2);
-    cv::Mat src_img = img(cv::Range(crop_y1, crop_y2+1), cv::Range(crop_x1, crop_x2 + 1));
+    cv::Mat src_img =
+        img(cv::Range(crop_y1, crop_y2 + 1), cv::Range(crop_x1, crop_x2 + 1));
 
     cv::Mat dst_img;
-    cv::copyMakeBorder(src_img, dst_img, std::max(0, -roi_y1), std::max(0, roi_y2-img.rows +1), std::max(0, -roi_x1), std::max(0, roi_x2-img.cols +1), cv::BorderTypes::BORDER_CONSTANT, cv::Scalar(0, 0, 0));
-    
+    cv::copyMakeBorder(src_img, dst_img, std::max(0, -roi_y1),
+                       std::max(0, roi_y2 - img.rows + 1), std::max(0, -roi_x1),
+                       std::max(0, roi_x2 - img.cols + 1),
+                       cv::BorderTypes::BORDER_CONSTANT, cv::Scalar(0, 0, 0));
+
     crop_img.emplace_back(dst_img);
 
     std::vector<float> center, scale;
     center.emplace_back(center_x);
     center.emplace_back(center_y);
-    scale.emplace_back((half_w*2)*(1+expandratio));
-    scale.emplace_back((half_h*2)*(1+expandratio));
+    scale.emplace_back((half_w * 2) * (1 + expandratio));
+    scale.emplace_back((half_h * 2) * (1 + expandratio));
 
     center_bs.emplace_back(center);
     scale_bs.emplace_back(scale);
   }
 }
-

@@ -72,7 +72,8 @@ void Detector::Preprocess(const cv::Mat &rgbaImage) {
   inputTensor->Resize(inputShape);
   auto inputData = inputTensor->mutable_data<float>();
   cv::Mat resizedRGBAImage;
-  cv::resize(rgbaImage, resizedRGBAImage, cv::Size(inputShape[3], inputShape[2]));
+  cv::resize(rgbaImage, resizedRGBAImage,
+             cv::Size(inputShape[3], inputShape[2]));
   cv::Mat resizedRGBImage;
   cv::cvtColor(resizedRGBAImage, resizedRGBImage, cv::COLOR_BGRA2RGB);
   resizedRGBImage.convertTo(resizedRGBImage, CV_32FC3, 1.0 / 255.0f);
@@ -97,7 +98,7 @@ void Detector::Postprocess(std::vector<RESULT> *results) {
     auto output_names = predictor_->GetOutputNames();
     for (int i = 0; i < output_names.size(); i++) {
       auto output_tensor = predictor_->GetTensor(output_names[i]);
-      const float* outptr = output_tensor->data<float>();
+      const float *outptr = output_tensor->data<float>();
       std::vector<int64_t> output_shape = output_tensor->shape();
       if (i == 0) {
         num_class = output_shape[2];
@@ -109,13 +110,10 @@ void Detector::Postprocess(std::vector<RESULT> *results) {
     }
 
     //
-    PicoDetPostProcess(
-    results, output_data_list_, fpn_stride_, 
-    inputs_.im_shape_, inputs_.scale_factor_,
-    score_threshold, 
-    nms_threshold, num_class, reg_max);
-  }
-  else {
+    PicoDetPostProcess(results, output_data_list_, fpn_stride_,
+                       inputs_.im_shape_, inputs_.scale_factor_,
+                       score_threshold, nms_threshold, num_class, reg_max);
+  } else {
     auto outputTensor = predictor_->GetOutput(0);
     auto outputData = outputTensor->data<float>();
     auto outputShape = outputTensor->shape();
@@ -168,81 +166,76 @@ void Detector::Predict(const cv::Mat &rgbaImage, std::vector<RESULT> *results,
 }
 
 float fast_exp(float x) {
-    union {
-        uint32_t i;
-        float f;
-    } v{};
-    v.i = (1 << 23) * (1.4426950409 * x + 126.93490512f);
-    return v.f;
+  union {
+    uint32_t i;
+    float f;
+  } v{};
+  v.i = (1 << 23) * (1.4426950409 * x + 126.93490512f);
+  return v.f;
 }
 
 template <typename _Tp>
 int activation_function_softmax(const _Tp *src, _Tp *dst, int length) {
-    const _Tp alpha = *std::max_element(src, src + length);
-    _Tp denominator{0};
+  const _Tp alpha = *std::max_element(src, src + length);
+  _Tp denominator{0};
 
-    for (int i = 0; i < length; ++i) {
-        dst[i] = fast_exp(src[i] - alpha);
-        denominator += dst[i];
-    }
+  for (int i = 0; i < length; ++i) {
+    dst[i] = fast_exp(src[i] - alpha);
+    denominator += dst[i];
+  }
 
-    for (int i = 0; i < length; ++i) {
-        dst[i] /= denominator;
-    }
+  for (int i = 0; i < length; ++i) {
+    dst[i] /= denominator;
+  }
 
-    return 0;
+  return 0;
 }
 
 // PicoDet decode
 RESULT Detector::disPred2Bbox(const float *&dfl_det, int label, float score,
-                      int x, int y, int stride, std::vector<float> im_shape,
-                      int reg_max) {
-    float ct_x = (x + 0.5) * stride;
-    float ct_y = (y + 0.5) * stride;
-    std::vector<float> dis_pred;
-    dis_pred.resize(4);
-    for (int i = 0; i < 4; i++) {
-      float dis = 0;
-      float* dis_after_sm = new float[reg_max + 1];
-      activation_function_softmax(dfl_det + i * (reg_max + 1), dis_after_sm, reg_max + 1);
-      for (int j = 0; j < reg_max + 1; j++) {
-          dis += j * dis_after_sm[j];
-      }
-      dis *= stride;
-      dis_pred[i] = dis;
-      delete[] dis_after_sm;
+                              int x, int y, int stride,
+                              std::vector<float> im_shape, int reg_max) {
+  float ct_x = (x + 0.5) * stride;
+  float ct_y = (y + 0.5) * stride;
+  std::vector<float> dis_pred;
+  dis_pred.resize(4);
+  for (int i = 0; i < 4; i++) {
+    float dis = 0;
+    float *dis_after_sm = new float[reg_max + 1];
+    activation_function_softmax(dfl_det + i * (reg_max + 1), dis_after_sm,
+                                reg_max + 1);
+    for (int j = 0; j < reg_max + 1; j++) {
+      dis += j * dis_after_sm[j];
     }
-    int xmin = (int)(std::max)(ct_x - dis_pred[0], .0f);
-    int ymin = (int)(std::max)(ct_y - dis_pred[1], .0f);
-    int xmax = (int)(std::min)(ct_x + dis_pred[2], (float)im_shape[0]);
-    int ymax = (int)(std::min)(ct_y + dis_pred[3], (float)im_shape[1]);
+    dis *= stride;
+    dis_pred[i] = dis;
+    delete[] dis_after_sm;
+  }
+  int xmin = (int)(std::max)(ct_x - dis_pred[0], .0f);
+  int ymin = (int)(std::max)(ct_y - dis_pred[1], .0f);
+  int xmax = (int)(std::min)(ct_x + dis_pred[2], (float)im_shape[0]);
+  int ymax = (int)(std::min)(ct_y + dis_pred[3], (float)im_shape[1]);
 
-    RESULT result_item;
-    result_item.x = xmin
-    result_item.y = ymin
-    result_item.w = xmax - xmin
-    result_item.h = ymax - ymin
-    result_item.class_id = label;
-    result_item.score = score;
-    result_item.class_name = label >= 0 && label < labelList_.size()
-                              ? labelList_[label]
-                              : "Unknow";
-    result_item.fill_color = label >= 0 && label < colorMap_.size()
-                              ? colorMap_[label]
-                              : cv::Scalar(0, 0, 0);
+  RESULT result_item;
+  result_item.x = xmin result_item.y = ymin result_item.w =
+      xmax - xmin result_item.h = ymax - ymin result_item.class_id = label;
+  result_item.score = score;
+  result_item.class_name =
+      label >= 0 && label < labelList_.size() ? labelList_[label] : "Unknow";
+  result_item.fill_color = label >= 0 && label < colorMap_.size()
+                               ? colorMap_[label]
+                               : cv::Scalar(0, 0, 0);
 
-    return result_item;
+  return result_item;
 }
 
-void Detector::PicoDetPostProcess(std::vector<RESULT>* results,
-                         std::vector<const float *> outs,
-                         std::vector<int> fpn_stride,
-                         std::vector<float> im_shape,
-                         std::vector<float> scale_factor,
-                         float score_threshold,
-                         float nms_threshold,
-                         int num_class,
-                         int reg_max) {
+void Detector::PicoDetPostProcess(std::vector<RESULT> *results,
+                                  std::vector<const float *> outs,
+                                  std::vector<int> fpn_stride,
+                                  std::vector<float> im_shape,
+                                  std::vector<float> scale_factor,
+                                  float score_threshold, float nms_threshold,
+                                  int num_class, int reg_max) {
   std::vector<std::vector<RESULT>> bbox_results;
   bbox_results.resize(num_class);
   int in_h = im_shape[0], in_w = im_shape[1];
@@ -263,10 +256,11 @@ void Detector::PicoDetPostProcess(std::vector<RESULT>* results,
         }
       }
       if (score > score_threshold) {
-        const float *bbox_pred = outs[i + fpn_stride.size()]
-              + (idx * 4 * (reg_max + 1));
-        bbox_results[cur_label].push_back(disPred2Bbox(bbox_pred, 
-              cur_label, score, col, row, fpn_stride[i], im_shape, reg_max));
+        const float *bbox_pred =
+            outs[i + fpn_stride.size()] + (idx * 4 * (reg_max + 1));
+        bbox_results[cur_label].push_back(
+            disPred2Bbox(bbox_pred, cur_label, score, col, row, fpn_stride[i],
+                         im_shape, reg_max));
       }
     }
   }
@@ -274,23 +268,22 @@ void Detector::PicoDetPostProcess(std::vector<RESULT>* results,
     nms(bbox_results[i], nms_threshold);
 
     for (auto box : bbox_results[i]) {
-        box.x = box.x / scale_factor[1];
-        box.w = box.w / scale_factor[1];
-        box.y = box.y / scale_factor[0];
-        box.h = box.h / scale_factor[0];
-        results->push_back(box);
+      box.x = box.x / scale_factor[1];
+      box.w = box.w / scale_factor[1];
+      box.y = box.y / scale_factor[0];
+      box.h = box.h / scale_factor[0];
+      results->push_back(box);
     }
   }
 }
 
 void nms(std::vector<RESULT> &input_boxes, float nms_threshold) {
-  std::sort(input_boxes.begin(),
-  input_boxes.end(), 
-  [](RESULT a, RESULT b) { return a.score > b.score; });
+  std::sort(input_boxes.begin(), input_boxes.end(),
+            [](RESULT a, RESULT b) { return a.score > b.score; });
   std::vector<float> vArea(input_boxes.size());
   for (int i = 0; i < int(input_boxes.size()); ++i) {
-    vArea[i] = (input_boxes.at(i).w - input_boxes.at(i).x + 1) 
-            * (input_boxes.at(i).h - input_boxes.at(i).y + 1);
+    vArea[i] = (input_boxes.at(i).w - input_boxes.at(i).x + 1) *
+               (input_boxes.at(i).h - input_boxes.at(i).y + 1);
   }
   for (int i = 0; i < int(input_boxes.size()); ++i) {
     for (int j = i + 1; j < int(input_boxes.size());) {
@@ -303,13 +296,11 @@ void nms(std::vector<RESULT> &input_boxes, float nms_threshold) {
       float inter = w * h;
       float ovr = inter / (vArea[i] + vArea[j] - inter);
       if (ovr >= nms_threshold) {
-          input_boxes.erase(input_boxes.begin() + j);
-          vArea.erase(vArea.begin() + j);
-      }
-      else {
-          j++;
+        input_boxes.erase(input_boxes.begin() + j);
+        vArea.erase(vArea.begin() + j);
+      } else {
+        j++;
       }
     }
   }
 }
-

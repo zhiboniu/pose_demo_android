@@ -63,23 +63,21 @@ private:
   std::shared_ptr<paddle::lite_api::PaddlePredictor> predictor_;
   //
   std::string arch_ = "PicoDet";
-  std::vector<int> fpn_stride_ = {8,16,32,64};
+  std::vector<int> fpn_stride_ = {8, 16, 32, 64};
   float score_threshold = 0.3;
   float nms_threshold = 0.5;
 };
 
-ObjectResult Detector::disPred2Bbox(const float *&dfl_det, int label, float score,
-                      int x, int y, int stride, std::vector<float> im_shape,
-                      int reg_max);
+ObjectResult Detector::disPred2Bbox(const float *&dfl_det, int label,
+                                    float score, int x, int y, int stride,
+                                    std::vector<float> im_shape, int reg_max);
 
-void Detector::PicoDetPostProcess(std::vector<ObjectResult>* results,
-                         std::vector<const float *> outs,
-                         std::vector<int> fpn_stride,
-                         std::vector<float> im_shape,
-                         std::vector<float> scale_factor,
-                         float score_threshold,
-                         float nms_threshold,
-                         int num_class,
-                         int reg_max);
+void Detector::PicoDetPostProcess(std::vector<ObjectResult> *results,
+                                  std::vector<const float *> outs,
+                                  std::vector<int> fpn_stride,
+                                  std::vector<float> im_shape,
+                                  std::vector<float> scale_factor,
+                                  float score_threshold, float nms_threshold,
+                                  int num_class, int reg_max);
 
 void nms(std::vector<ObjectResult> &input_boxes, float nms_threshold);
