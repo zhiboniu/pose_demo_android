@@ -14,7 +14,7 @@
 
 #include "Pipeline.h"
 
-//Pipeline
+// Pipeline
 
 Pipeline::Pipeline(const std::string &modelDir, const std::string &labelPath,
                    const int cpuThreadNum, const std::string &cpuPowerMode,
@@ -24,9 +24,9 @@ Pipeline::Pipeline(const std::string &modelDir, const std::string &labelPath,
   detector_.reset(new Detector(modelDir, labelPath, cpuThreadNum, cpuPowerMode,
                                inputWidth, inputHeight, inputMean, inputStd,
                                scoreThreshold));
-  detector_keypoint_.reset(new Detector_KeyPoint(modelDir, labelPath, cpuThreadNum, cpuPowerMode,
-                               192, 256, inputMean, inputStd,
-                               0.5));
+  detector_keypoint_.reset(
+      new Detector_KeyPoint(modelDir, labelPath, cpuThreadNum, cpuPowerMode,
+                            192, 256, inputMean, inputStd, 0.5));
 }
 
 void Pipeline::VisualizeResults(const std::vector<RESULT> &results,
@@ -58,9 +58,9 @@ void Pipeline::VisualizeResults(const std::vector<RESULT> &results,
   }
 }
 
-
-void Pipeline::VisualizeKptsResults(const std::vector<RESULT> &results, const std::vector<RESULT_KEYPOINT> &results_kpts,
-                                    cv::Mat *rgbaImage) {
+void Pipeline::VisualizeKptsResults(
+    const std::vector<RESULT> &results,
+    const std::vector<RESULT_KEYPOINT> &results_kpts, cv::Mat *rgbaImage) {
   int w = rgbaImage->cols;
   int h = rgbaImage->rows;
   for (int i = 0; i < results.size(); i++) {
@@ -87,48 +87,30 @@ void Pipeline::VisualizeKptsResults(const std::vector<RESULT> &results, const st
                 fontFace, fontScale, cv::Scalar(255, 255, 255), fontThickness);
   }
 
-  const int edge[][2] = {{0, 1},
-                         {0, 2},
-                         {1, 3},
-                         {2, 4},
-                         {3, 5},
-                         {4, 6},
-                         {5, 7},
-                         {6, 8},
-                         {7, 9},
-                         {8, 10},
-                         {5, 11},
-                         {6, 12},
-                         {11, 13},
-                         {12, 14},
-                         {13, 15},
-                         {14, 16},
-                         {11, 12}};
+  const int edge[][2] = {{0, 1},   {0, 2},  {1, 3},   {2, 4},   {3, 5},
+                         {4, 6},   {5, 7},  {6, 8},   {7, 9},   {8, 10},
+                         {5, 11},  {6, 12}, {11, 13}, {12, 14}, {13, 15},
+                         {14, 16}, {11, 12}};
   float kpts_threshold = detector_keypoint_->get_threshold();
   for (int batchid = 0; batchid < results_kpts.size(); batchid++) {
     for (int i = 0; i < results_kpts[batchid].num_joints; i++) {
       if (results_kpts[batchid].keypoints[i * 3] > kpts_threshold) {
         int x_coord = int(results_kpts[batchid].keypoints[i * 3 + 1]);
         int y_coord = int(results_kpts[batchid].keypoints[i * 3 + 2]);
-        cv::circle(*rgbaImage,
-                   cv::Point2d(x_coord, y_coord),
-                   2,
-                   cv::Scalar(0, 255, 255),
-                   2);
+        cv::circle(*rgbaImage, cv::Point2d(x_coord, y_coord), 2,
+                   cv::Scalar(0, 255, 255), 2);
       }
     }
     for (int i = 0; i < results_kpts[batchid].num_joints; i++) {
-      if(results_kpts[batchid].keypoints[edge[i][0] * 3] < kpts_threshold || results_kpts[batchid].keypoints[edge[i][1] * 3] < kpts_threshold)
+      if (results_kpts[batchid].keypoints[edge[i][0] * 3] < kpts_threshold ||
+          results_kpts[batchid].keypoints[edge[i][1] * 3] < kpts_threshold)
         continue;
       int x_start = int(results_kpts[batchid].keypoints[edge[i][0] * 3 + 1]);
       int y_start = int(results_kpts[batchid].keypoints[edge[i][0] * 3 + 2]);
       int x_end = int(results_kpts[batchid].keypoints[edge[i][1] * 3 + 1]);
       int y_end = int(results_kpts[batchid].keypoints[edge[i][1] * 3 + 2]);
-      cv::line(*rgbaImage,
-               cv::Point2d(x_start, y_start),
-               cv::Point2d(x_end, y_end),
-               cv::Scalar(0, 255, 255),
-               2);
+      cv::line(*rgbaImage, cv::Point2d(x_start, y_start),
+               cv::Point2d(x_end, y_end), cv::Scalar(0, 255, 255), 2);
     }
   }
 }
@@ -172,7 +154,8 @@ bool Pipeline::Process(int inTexureId, int outTextureId, int textureWidth,
                        int textureHeight, std::string savedImagePath) {
   static double readGLFBOTime = 0, writeGLTextureTime = 0;
   double preprocessTime = 0, predictTime = 0, postprocessTime = 0;
-  double preprocessTime_kpts = 0, predictTime_kpts = 0, postprocessTime_kpts = 0;
+  double preprocessTime_kpts = 0, predictTime_kpts = 0,
+         postprocessTime_kpts = 0;
 
   // Read pixels from FBO texture to CV image
   cv::Mat rgbaImage;
@@ -180,7 +163,7 @@ bool Pipeline::Process(int inTexureId, int outTextureId, int textureWidth,
                                   &readGLFBOTime);
 
   // Feed the image, run inference and parse the results
-  if (idx%2 == 0 or results.empty()){
+  if (idx % 2 == 0 or results.empty()) {
     idx = 0;
     results.clear();
     detector_->Predict(rgbaImage, &results, &preprocessTime, &predictTime,
@@ -188,12 +171,14 @@ bool Pipeline::Process(int inTexureId, int outTextureId, int textureWidth,
   }
   idx++;
 
-  //add keypoint pipeline
+  // add keypoint pipeline
   std::vector<RESULT_KEYPOINT> results_kpts;
-  detector_keypoint_->Predict(rgbaImage, &results, &results_kpts, &preprocessTime_kpts, &predictTime_kpts, &postprocessTime_kpts);
+  detector_keypoint_->Predict(rgbaImage, &results, &results_kpts,
+                              &preprocessTime_kpts, &predictTime_kpts,
+                              &postprocessTime_kpts);
 
   // Visualize the objects to the origin image
-//  VisualizeResults(results, &rgbaImage);
+  //  VisualizeResults(results, &rgbaImage);
   VisualizeKptsResults(results, results_kpts, &rgbaImage);
 
   // Visualize the status(performance data) to the origin image

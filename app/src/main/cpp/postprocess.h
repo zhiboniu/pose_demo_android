@@ -19,45 +19,30 @@
 #include <opencv2/imgproc/imgproc.hpp>
 #include <vector>
 
-std::vector<float> get_3rd_point(std::vector<float>& a, std::vector<float>& b);
+std::vector<float> get_3rd_point(std::vector<float> &a, std::vector<float> &b);
 
 std::vector<float> get_dir(float src_point_x, float src_point_y, float rot_rad);
 
-void affine_tranform(
-    float pt_x, float pt_y, cv::Mat& trans, std::vector<float>& preds, int p);
+void affine_tranform(float pt_x, float pt_y, cv::Mat &trans,
+                     std::vector<float> &preds, int p);
 
-cv::Mat get_affine_transform(std::vector<float>& center,
-                             std::vector<float>& scale,
-                             float rot,
-                             std::vector<int>& output_size,
-                             int inv);
+cv::Mat get_affine_transform(std::vector<float> &center,
+                             std::vector<float> &scale, float rot,
+                             std::vector<int> &output_size, int inv);
 
-void transform_preds(std::vector<float>& coords,
-                     std::vector<float>& center,
-                     std::vector<float>& scale,
-                     std::vector<int>& output_size,
-                     std::vector<int64_t>& dim,
-                     std::vector<float>& target_coords);
+void transform_preds(std::vector<float> &coords, std::vector<float> &center,
+                     std::vector<float> &scale, std::vector<int> &output_size,
+                     std::vector<int64_t> &dim,
+                     std::vector<float> &target_coords);
 
-void box_to_center_scale(std::vector<int>& box,
-                         int width,
-                         int height,
-                         std::vector<float>& center,
-                         std::vector<float>& scale);
+void box_to_center_scale(std::vector<int> &box, int width, int height,
+                         std::vector<float> &center, std::vector<float> &scale);
 
-void get_max_preds(float* heatmap,
-                   std::vector<int>& dim,
-                   std::vector<float>& preds,
-                   float* maxvals,
-                   int batchid,
+void get_max_preds(float *heatmap, std::vector<int> &dim,
+                   std::vector<float> &preds, float *maxvals, int batchid,
                    int joint_idx);
-                   
-void get_final_preds(std::vector<float>& heatmap,
-                     std::vector<int64_t>& dim,
-                     std::vector<int64_t>& idxout,
-                     std::vector<int64_t>& idxdim,
-                     std::vector<float>& center,
-                     std::vector<float> scale,
-                     std::vector<float>& preds,
-                     int batchid,
-                     bool DARK = true);
+
+void get_final_preds(std::vector<float> &heatmap, std::vector<int64_t> &dim,
+                     std::vector<int64_t> &idxout, std::vector<int64_t> &idxdim,
+                     std::vector<float> &center, std::vector<float> scale,
+                     std::vector<float> &preds, int batchid, bool DARK = true);

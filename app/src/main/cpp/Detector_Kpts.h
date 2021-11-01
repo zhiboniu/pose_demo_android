@@ -33,26 +33,32 @@ struct RESULT_KEYPOINT {
 
 class Detector_KeyPoint {
 public:
-  explicit Detector_KeyPoint(const std::string &modelDir, const std::string &labelPath,
-                    const int cpuThreadNum, const std::string &cpuPowerMode,
-                    int inputWidth, int inputHeight,
-                    const std::vector<float> &inputMean,
-                    const std::vector<float> &inputStd, float scoreThreshold);
+  explicit Detector_KeyPoint(
+      const std::string &modelDir, const std::string &labelPath,
+      const int cpuThreadNum, const std::string &cpuPowerMode, int inputWidth,
+      int inputHeight, const std::vector<float> &inputMean,
+      const std::vector<float> &inputStd, float scoreThreshold);
 
-  void Predict(const cv::Mat &rgbImage, std::vector<RESULT> *results, std::vector<RESULT_KEYPOINT> *results_kpts, 
+  void Predict(const cv::Mat &rgbImage, std::vector<RESULT> *results,
+               std::vector<RESULT_KEYPOINT> *results_kpts,
                double *preprocessTime, double *predictTime,
                double *postprocessTime);
 
-  void CropImg(const cv::Mat &img, std::vector<cv::Mat> &crop_img, std::vector<RESULT> &results, std::vector<std::vector<float>> &center_bs, std::vector<std::vector<float>> &scale_bs, float expandratio=0.2);
+  void CropImg(const cv::Mat &img, std::vector<cv::Mat> &crop_img,
+               std::vector<RESULT> &results,
+               std::vector<std::vector<float>> &center_bs,
+               std::vector<std::vector<float>> &scale_bs,
+               float expandratio = 0.2);
   RESULT FindMaxRect(std::vector<RESULT> *results);
-  float get_threshold() {return scoreThreshold_;};
+  float get_threshold() { return scoreThreshold_; };
 
 private:
   std::vector<cv::Scalar> GenerateColorMap(int numOfClasses);
   void Preprocess(std::vector<cv::Mat> &bs_images);
   void Postprocess(std::vector<RESULT_KEYPOINT> *results,
-                                   std::vector<std::vector<float>>& center_bs,
-                                   std::vector<std::vector<float>>& scale_bs);
+                   std::vector<std::vector<float>> &center_bs,
+                   std::vector<std::vector<float>> &scale_bs);
+
 private:
   int inputWidth_;
   int inputHeight_;
