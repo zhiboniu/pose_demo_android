@@ -33,7 +33,7 @@ add_library(
   # Sets the library as a shared library.
   SHARED
   # Provides a relative path to your source file(s).
-  Native.cc postprocess.cc Pipeline.cc Utils.cc)
+  Native.cc postprocess.cc Detector.cc Detector_Kpts.cc Pipeline.cc Utils.cc pose_action.cc)
 
 find_library(
   # Sets the name of the path variable.

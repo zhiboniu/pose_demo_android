@@ -14,6 +14,8 @@
 
 #pragma once
 
+#include "Utils.h"
+#include "paddle_api.h"
 #include <EGL/egl.h>
 #include <GLES2/gl2.h>
 #include <opencv2/core.hpp>
@@ -51,7 +53,16 @@ private:
   std::vector<cv::Scalar> GenerateColorMap(int numOfClasses);
   void Preprocess(const cv::Mat &rgbaImage);
   void Postprocess(std::vector<RESULT> *results);
-
+  RESULT disPred2Bbox(const float *&dfl_det, int label,
+                      float score, int x, int y, int stride,
+                      std::vector<float> im_shape, int reg_max);
+  void PicoDetPostProcess(std::vector<RESULT> *results,
+                          std::vector<const float *> outs,
+                          std::vector<int> fpn_stride,
+                          std::vector<float> im_shape,
+                          std::vector<float> scale_factor,
+                          float score_threshold, float nms_threshold,
+                          int num_class, int reg_max);
 private:
   int inputWidth_;
   int inputHeight_;
@@ -68,16 +79,6 @@ private:
   float nms_threshold = 0.5;
 };
 
-ObjectResult Detector::disPred2Bbox(const float *&dfl_det, int label,
-                                    float score, int x, int y, int stride,
-                                    std::vector<float> im_shape, int reg_max);
 
-void Detector::PicoDetPostProcess(std::vector<ObjectResult> *results,
-                                  std::vector<const float *> outs,
-                                  std::vector<int> fpn_stride,
-                                  std::vector<float> im_shape,
-                                  std::vector<float> scale_factor,
-                                  float score_threshold, float nms_threshold,
-                                  int num_class, int reg_max);
 
-void nms(std::vector<ObjectResult> &input_boxes, float nms_threshold);
+void nms(std::vector<RESULT> &input_boxes, float nms_threshold);
