@@ -15,6 +15,8 @@
 #pragma once
 
 #include "Utils.h"
+#include "Detector.h"
+#include "Detector_Kpts.h"
 #include "paddle_api.h"
 #include <EGL/egl.h>
 #include <GLES2/gl2.h>
@@ -68,7 +70,9 @@ private:
   // Visualize the status(performace data) to origin image
   void VisualizeStatus(double readGLFBOTime, double writeGLTextureTime,
                        double preprocessTime, double predictTime,
-                       double postprocessTime, cv::Mat *rgbaImage);
+                       double postprocessTime, cv::Mat *rgbaImage,
+                       std::vector<RESULT_KEYPOINT> &results_kpts,
+                       std::vector<RESULT> &results);
 
 private:
   std::shared_ptr<Detector> detector_;

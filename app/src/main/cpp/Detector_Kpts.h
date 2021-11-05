@@ -16,6 +16,7 @@
 
 #include "Utils.h"
 #include "paddle_api.h"
+#include "Detector.h"
 #include <EGL/egl.h>
 #include <GLES2/gl2.h>
 #include <opencv2/core.hpp>

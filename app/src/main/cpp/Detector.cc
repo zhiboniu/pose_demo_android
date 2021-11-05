@@ -66,26 +66,33 @@ std::vector<cv::Scalar> Detector::GenerateColorMap(int numOfClasses) {
 }
 
 void Detector::Preprocess(const cv::Mat &rgbaImage) {
-  // Set the data of input image
-  auto inputTensor = predictor_->GetInput(0);
   std::vector<int64_t> inputShape = {1, 3, inputHeight_, inputWidth_};
-  inputTensor->Resize(inputShape);
-  auto inputData = inputTensor->mutable_data<float>();
-  cv::Mat resizedRGBAImage;
-  cv::resize(rgbaImage, resizedRGBAImage,
-             cv::Size(inputShape[3], inputShape[2]));
-  cv::Mat resizedRGBImage;
-  cv::cvtColor(resizedRGBAImage, resizedRGBImage, cv::COLOR_BGRA2RGB);
-  resizedRGBImage.convertTo(resizedRGBImage, CV_32FC3, 1.0 / 255.0f);
-  NHWC3ToNC3HW(reinterpret_cast<const float *>(resizedRGBImage.data), inputData,
-               inputMean_.data(), inputStd_.data(), inputShape[3],
-               inputShape[2]);
-  // Set the size of input image
-  auto sizeTensor = predictor_->GetInput(1);
-  sizeTensor->Resize({1, 2});
-  auto sizeData = sizeTensor->mutable_data<int32_t>();
-  sizeData[0] = inputShape[3];
-  sizeData[1] = inputShape[2];
+  auto input_names = predictor_->GetInputNames();
+  for (const auto& tensor_name : input_names) {
+    if (tensor_name == "image") {
+      auto inputTensor = predictor_->GetInputByName(tensor_name);
+      // Set the data of input image
+//      auto inputTensor = predictor_->GetInput(0);
+      inputTensor->Resize(inputShape);
+      auto inputData = inputTensor->mutable_data<float>();
+      cv::Mat resizedRGBAImage;
+      cv::resize(rgbaImage, resizedRGBAImage,
+                 cv::Size(inputShape[3], inputShape[2]));
+      cv::Mat resizedRGBImage;
+      cv::cvtColor(resizedRGBAImage, resizedRGBImage, cv::COLOR_BGRA2RGB);
+      resizedRGBImage.convertTo(resizedRGBImage, CV_32FC3, 1.0 / 255.0f);
+      NHWC3ToNC3HW_bn(reinterpret_cast<const float *>(resizedRGBImage.data), inputData,
+                   inputMean_.data(), inputStd_.data(), inputShape[3],
+                   inputShape[2]);
+    } else if (tensor_name == "im_shape") {
+      // Set the size of input image
+      auto sizeTensor = predictor_->GetInputByName(tensor_name);
+      sizeTensor->Resize({1, 2});
+      auto sizeData = sizeTensor->mutable_data<int32_t>();
+      sizeData[0] = inputShape[3];
+      sizeData[1] = inputShape[2];
+    }
+  }
 }
 
 void Detector::Postprocess(std::vector<RESULT> *results) {
@@ -110,8 +117,10 @@ void Detector::Postprocess(std::vector<RESULT> *results) {
     }
 
     //
+    std::vector<float> im_shape_ = {static_cast<float>(inputHeight_), static_cast<float>(inputWidth_)};
+    std::vector<float> scale_factor_ = {static_cast<float>(inputHeight_), static_cast<float>(inputWidth_)};
     PicoDetPostProcess(results, output_data_list_, fpn_stride_,
-                       inputs_.im_shape_, inputs_.scale_factor_,
+                       im_shape_, scale_factor_,
                        score_threshold, nms_threshold, num_class, reg_max);
   } else {
     auto outputTensor = predictor_->GetOutput(0);
@@ -152,7 +161,7 @@ void Detector::Predict(const cv::Mat &rgbaImage, std::vector<RESULT> *results,
   t = GetCurrentTime();
   Preprocess(rgbaImage);
   *preprocessTime = GetElapsedTime(t);
-  LOGD("Detector postprocess costs %f ms", *preprocessTime);
+  LOGD("Detector preprocess costs %f ms", *preprocessTime);
 
   t = GetCurrentTime();
   predictor_->Run();
@@ -217,8 +226,11 @@ RESULT Detector::disPred2Bbox(const float *&dfl_det, int label, float score,
   int ymax = (int)(std::min)(ct_y + dis_pred[3], (float)im_shape[1]);
 
   RESULT result_item;
-  result_item.x = xmin result_item.y = ymin result_item.w =
-      xmax - xmin result_item.h = ymax - ymin result_item.class_id = label;
+  result_item.x = xmin;
+  result_item.y = ymin;
+  result_item.w = xmax - xmin;
+  result_item.h = ymax - ymin;
+  result_item.class_id = label;
   result_item.score = score;
   result_item.class_name =
       label >= 0 && label < labelList_.size() ? labelList_[label] : "Unknow";
@@ -255,7 +267,7 @@ void Detector::PicoDetPostProcess(std::vector<RESULT> *results,
           cur_label = label;
         }
       }
-      if (score > score_threshold) {
+      if (score > score_threshold && cur_label == 0) {
         const float *bbox_pred =
             outs[i + fpn_stride.size()] + (idx * 4 * (reg_max + 1));
         bbox_results[cur_label].push_back(
@@ -275,6 +287,7 @@ void Detector::PicoDetPostProcess(std::vector<RESULT> *results,
       results->push_back(box);
     }
   }
+  LOGD("DEBUG: result number: %d", results->size());
 }
 
 void nms(std::vector<RESULT> &input_boxes, float nms_threshold) {
@@ -282,15 +295,14 @@ void nms(std::vector<RESULT> &input_boxes, float nms_threshold) {
             [](RESULT a, RESULT b) { return a.score > b.score; });
   std::vector<float> vArea(input_boxes.size());
   for (int i = 0; i < int(input_boxes.size()); ++i) {
-    vArea[i] = (input_boxes.at(i).w - input_boxes.at(i).x + 1) *
-               (input_boxes.at(i).h - input_boxes.at(i).y + 1);
+    vArea[i] = input_boxes.at(i).w * input_boxes.at(i).h;
   }
   for (int i = 0; i < int(input_boxes.size()); ++i) {
     for (int j = i + 1; j < int(input_boxes.size());) {
       float xx1 = (std::max)(input_boxes[i].x, input_boxes[j].x);
       float yy1 = (std::max)(input_boxes[i].y, input_boxes[j].y);
-      float xx2 = (std::min)(input_boxes[i].w, input_boxes[j].w);
-      float yy2 = (std::min)(input_boxes[i].h, input_boxes[j].h);
+      float xx2 = (std::min)(input_boxes[i].x+input_boxes[i].w, input_boxes[j].x+input_boxes[j].w);
+      float yy2 = (std::min)(input_boxes[i].y+input_boxes[i].h, input_boxes[j].y+input_boxes[j].h);
       float w = (std::max)(float(0), xx2 - xx1 + 1);
       float h = (std::max)(float(0), yy2 - yy1 + 1);
       float inter = w * h;

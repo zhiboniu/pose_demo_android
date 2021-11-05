@@ -88,5 +88,8 @@ inline paddle::lite_api::PowerMode ParsePowerMode(std::string mode) {
 void NHWC3ToNC3HW(const float *src, float *dst, const float *mean,
                   const float *std, int width, int height);
 
+void NHWC3ToNC3HW_bn(const float *src, float *dst, const float *mean,
+                  const float *std, int width, int height);
+
 void NHWC1ToNC1HW(const float *src, float *dst, const float *mean,
                   const float *std, int width, int height);

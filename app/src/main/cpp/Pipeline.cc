@@ -13,6 +13,7 @@
 // limitations under the License.
 
 #include "Pipeline.h"
+#include "pose_action.h"
 
 // Pipeline
 
@@ -26,7 +27,7 @@ Pipeline::Pipeline(const std::string &modelDir, const std::string &labelPath,
                                scoreThreshold));
   detector_keypoint_.reset(
       new Detector_KeyPoint(modelDir, labelPath, cpuThreadNum, cpuPowerMode,
-                            192, 256, inputMean, inputStd, 0.5));
+                            192, 256, inputMean, inputStd, 0.2));
 }
 
 void Pipeline::VisualizeResults(const std::vector<RESULT> &results,
@@ -94,6 +95,7 @@ void Pipeline::VisualizeKptsResults(
   float kpts_threshold = detector_keypoint_->get_threshold();
   for (int batchid = 0; batchid < results_kpts.size(); batchid++) {
     for (int i = 0; i < results_kpts[batchid].num_joints; i++) {
+      LOGD("DEBUG: Detector_KeyPoint res: %f %f %f",results_kpts[batchid].keypoints[i * 3],results_kpts[batchid].keypoints[i * 3],results_kpts[batchid].keypoints[i * 3]);
       if (results_kpts[batchid].keypoints[i * 3] > kpts_threshold) {
         int x_coord = int(results_kpts[batchid].keypoints[i * 3 + 1]);
         int y_coord = int(results_kpts[batchid].keypoints[i * 3 + 2]);
@@ -117,7 +119,9 @@ void Pipeline::VisualizeKptsResults(
 
 void Pipeline::VisualizeStatus(double readGLFBOTime, double writeGLTextureTime,
                                double preprocessTime, double predictTime,
-                               double postprocessTime, cv::Mat *rgbaImage) {
+                               double postprocessTime, cv::Mat *rgbaImage,
+                               std::vector<RESULT_KEYPOINT> &results_kpts,
+                               std::vector<RESULT> &results) {
   char text[255];
   cv::Scalar fontColor = cv::Scalar(255, 0, 0);
   int fontFace = cv::FONT_HERSHEY_PLAIN;
@@ -143,6 +147,18 @@ void Pipeline::VisualizeStatus(double readGLFBOTime, double writeGLTextureTime,
   cv::putText(*rgbaImage, text, offset, fontFace, fontScale, fontColor,
               fontThickness);
   sprintf(text, "Postprocess time: %.1f ms", postprocessTime);
+  offset.y += textSize.height;
+  cv::putText(*rgbaImage, text, offset, fontFace, fontScale, fontColor,
+              fontThickness);
+  //print action count on screen
+  int action_count = get_action_count();
+  //check_lateral_raise
+  //check_stand_press
+  //check_deep_down
+  if (!results.empty()) {
+    action_count = check_stand_press(results_kpts[0].keypoints);
+  }
+  sprintf(text, "Action Counts: %d", action_count);
   offset.y += textSize.height;
   cv::putText(*rgbaImage, text, offset, fontFace, fontScale, fontColor,
               fontThickness);
@@ -178,12 +194,12 @@ bool Pipeline::Process(int inTexureId, int outTextureId, int textureWidth,
                               &postprocessTime_kpts);
 
   // Visualize the objects to the origin image
-  //  VisualizeResults(results, &rgbaImage);
+//  VisualizeResults(results, &rgbaImage);
   VisualizeKptsResults(results, results_kpts, &rgbaImage);
 
   // Visualize the status(performance data) to the origin image
   VisualizeStatus(readGLFBOTime, writeGLTextureTime, preprocessTime_kpts,
-                  predictTime_kpts, postprocessTime_kpts, &rgbaImage);
+                  predictTime_kpts, postprocessTime_kpts, &rgbaImage, results_kpts, results);
 
   // Dump modified image if savedImagePath is set
   if (!savedImagePath.empty()) {

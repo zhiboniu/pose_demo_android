@@ -66,9 +66,9 @@ void Detector_KeyPoint::Preprocess(std::vector<cv::Mat> &bs_images) {
                cv::Size(inputShape[3], inputShape[2]));
     cv::Mat resizedRGBImage;
     cv::cvtColor(resizedRGBAImage, resizedRGBImage, cv::COLOR_BGRA2RGB);
-    resizedRGBImage.convertTo(resizedRGBImage, CV_32FC3, 1.0 / 255.0f);
+    resizedRGBImage.convertTo(resizedRGBImage, CV_32FC3, 1.0/255.f);
     auto dst_inptr = inputData + i * (3 * inputHeight_ * inputWidth_);
-    NHWC3ToNC3HW(reinterpret_cast<const float *>(resizedRGBImage.data),
+    NHWC3ToNC3HW_bn(reinterpret_cast<const float *>(resizedRGBImage.data),
                  dst_inptr, inputMean_.data(), inputStd_.data(), inputShape[3],
                  inputShape[2]);
   }
@@ -129,11 +129,11 @@ void Detector_KeyPoint::Predict(const cv::Mat &rgbaImage,
   std::vector<cv::Mat> cropimgs;
   RESULT srect = FindMaxRect(results);
   std::vector<RESULT> sresult = {srect};
-  CropImg(rgbaImage, cropimgs, *results, center_bs, scale_bs);
+  CropImg(rgbaImage, cropimgs, sresult, center_bs, scale_bs);
   t = GetCurrentTime();
   Preprocess(cropimgs);
   *preprocessTime = GetElapsedTime(t);
-  LOGD("Detector_KeyPoint postprocess costs %f ms", *preprocessTime);
+  LOGD("Detector_KeyPoint preprocess costs %f ms", *preprocessTime);
 
   t = GetCurrentTime();
   predictor_keypoint_->Run();
@@ -168,7 +168,7 @@ void Detector_KeyPoint::CropImg(const cv::Mat &img,
                                 float expandratio) {
   int w = img.cols;
   int h = img.rows;
-  for (int i = 0; i < std::min(int(results.size()), 4); i++) {
+  for (int i = 0; i < std::min(int(results.size()), 2); i++) {
     auto area = results[i];
     int crop_x1 = std::max(0, static_cast<int>(area.x * w));
     int crop_y1 = std::max(0, static_cast<int>(area.y * h));
