@@ -20,10 +20,18 @@
 #include <vector>
 #include "Detector_Kpts.h"
 
-int get_action_count();
+struct action_helper {
+  bool mark = false;
+  int action_count = 0;
+  int latency = 0;
+};
+
+int get_action_count(int recid);
 float get_xyratio(std::vector<float> &kpts_sframe, int index_x, int index_y);
 bool get_xyhigher(std::vector<float> &kpts_sframe, int index_x, int index_y);
-int check_lateral_raise(std::vector<float> &kpts_sframe);
-int check_stand_press(std::vector<float> &kpts_sframe);
-int check_deep_down(std::vector<float> &kpts_sframe);
-int check_deep_down2(float w, float h);
+int check_lateral_raise(std::vector<float> &kpts_sframe, int recid);
+int check_stand_press(std::vector<float> &kpts_sframe, int recid);
+int check_deep_down(std::vector<float> &kpts_sframe, int recid);
+int check_deep_down2(std::vector<float> &kpts_sframe, float h, int recid);
+int single_action_check(std::vector<float> &results_kpts, float h, int actionid, int recid=0);
+void double_action_check(std::vector<RESULT_KEYPOINT> &results_kpts, std::vector<RESULT> &results, int actionid);

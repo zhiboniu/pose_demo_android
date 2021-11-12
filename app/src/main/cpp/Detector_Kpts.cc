@@ -14,6 +14,7 @@
 
 #include "Detector_Kpts.h"
 #include "postprocess.h"
+#include <set>
 
 // KeyPoint Detector
 
@@ -26,6 +27,7 @@ Detector_KeyPoint::Detector_KeyPoint(
       inputStd_(inputStd), scoreThreshold_(scoreThreshold) {
   paddle::lite_api::MobileConfig config;
   config.set_model_from_file(modelDir + "/model_keypoint.nb");
+
   config.set_threads(cpuThreadNum);
   config.set_power_mode(ParsePowerMode(cpuPowerMode));
   predictor_keypoint_ =
@@ -66,18 +68,14 @@ void Detector_KeyPoint::Preprocess(std::vector<cv::Mat> &bs_images) {
                cv::Size(inputShape[3], inputShape[2]));
     cv::Mat resizedRGBImage;
     cv::cvtColor(resizedRGBAImage, resizedRGBImage, cv::COLOR_BGRA2RGB);
-    resizedRGBImage.convertTo(resizedRGBImage, CV_32FC3, 1.0/255.f);
+
+    resizedRGBImage.convertTo(resizedRGBImage, CV_32FC3, 1.0/1.f);
     auto dst_inptr = inputData + i * (3 * inputHeight_ * inputWidth_);
-    NHWC3ToNC3HW_bn(reinterpret_cast<const float *>(resizedRGBImage.data),
-                 dst_inptr, inputMean_.data(), inputStd_.data(), inputShape[3],
-                 inputShape[2]);
+    Permute(&resizedRGBImage, dst_inptr);
+//    NHWC3ToNC3HW(reinterpret_cast<const float *>(resizedRGBImage.data),
+//                 dst_inptr, inputMean_.data(), inputStd_.data(), inputShape[3],
+//                 inputShape[2]);
   }
-  // Set the size of input image
-  //  auto sizeTensor = predictor_keypoint_->GetInput(1);
-  //  sizeTensor->Resize({1, 2});
-  //  auto sizeData = sizeTensor->mutable_data<int32_t>();
-  //  sizeData[0] = inputShape[3];
-  //  sizeData[1] = inputShape[2];
 }
 
 void Detector_KeyPoint::Postprocess(std::vector<RESULT_KEYPOINT> *results,
@@ -127,8 +125,8 @@ void Detector_KeyPoint::Predict(const cv::Mat &rgbaImage,
   std::vector<std::vector<float>> center_bs;
   std::vector<std::vector<float>> scale_bs;
   std::vector<cv::Mat> cropimgs;
-  RESULT srect = FindMaxRect(results);
-  std::vector<RESULT> sresult = {srect};
+  std::vector<RESULT> sresult;
+  FindMaxRect(results, sresult, 2);
   CropImg(rgbaImage, cropimgs, sresult, center_bs, scale_bs);
   t = GetCurrentTime();
   Preprocess(cropimgs);
@@ -146,18 +144,24 @@ void Detector_KeyPoint::Predict(const cv::Mat &rgbaImage,
   LOGD("Detector_KeyPoint postprocess costs %f ms", *postprocessTime);
 }
 
-RESULT Detector_KeyPoint::FindMaxRect(std::vector<RESULT> *results) {
-  int maxid = 0;
-  for (int i = 0; i < results->size(); i++) {
-    if ((*results)[i].h + (*results)[i].w >
-        (*results)[maxid].h + (*results)[maxid].w) {
-      maxid = i;
+void Detector_KeyPoint::FindMaxRect(std::vector<RESULT> *results, std::vector<RESULT> &rect_buff, int findnum) {
+  std::set<int> findset;
+  for (int i=0; i<findnum; i++) {
+    int maxid = 0;
+    for (int i = 0; i < results->size(); i++) {
+      if (findset.count(i) > 0) {
+        continue;
+      }
+      if ((*results)[i].h + (*results)[i].w >
+          (*results)[maxid].h + (*results)[maxid].w) {
+        maxid = i;
+      }
     }
+
+    (*results)[maxid].fill_color = colorMap_[1];
+    rect_buff.emplace_back((*results)[maxid]);
+    findset.insert(maxid);
   }
-
-  (*results)[maxid].fill_color = colorMap_[1];
-
-  return (*results)[maxid];
 }
 
 void Detector_KeyPoint::CropImg(const cv::Mat &img,
