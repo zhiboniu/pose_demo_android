@@ -4,7 +4,7 @@
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#BDD7EE">
+        android:background="@color/colorBackground">
 
 
     <FrameLayout
@@ -45,7 +45,7 @@
     </FrameLayout>
     <FrameLayout
             android:layout_marginTop="20dp"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/pose_a"
     >
@@ -57,14 +57,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="180dp"
                 android:scaleType="fitXY"
-                android:src="@drawable/dumbbell"
+                android:src="@drawable/pose_a"
         ></ImageView>
 
 
         <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="举哑铃"
+                android:text="肩上举"
                 android:textColor="#ffffff"
                 android:textStyle="bold"
                 android:textSize="25sp"
@@ -89,7 +89,7 @@
 
     <FrameLayout
             android:layout_marginTop="30dp"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/pose_b"
     >
@@ -100,13 +100,13 @@
                 android:layout_height="180dp"
                 android:scaleType="fitXY"
                 android:layout_marginTop="10dp"
-                android:src="@drawable/chair_posture"
+                android:src="@drawable/pose_b"
         ></ImageView>
 
         <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="椅子姿势"
+                android:text="侧平举"
                 android:textColor="#ffffff"
                 android:textStyle="bold"
                 android:textSize="25sp"
@@ -130,7 +130,7 @@
 
     <FrameLayout
             android:layout_marginTop="30dp"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/pose_c"
     >
@@ -142,13 +142,13 @@
                 android:layout_height="180dp"
                 android:scaleType="fitXY"
                 android:layout_marginTop="10dp"
-                android:src="@drawable/squat"
+                android:src="@drawable/pose_c"
         ></ImageView>
 
         <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="蹲起"
+                android:text="深蹲"
                 android:textColor="#ffffff"
                 android:textStyle="bold"
                 android:layout_gravity="right"

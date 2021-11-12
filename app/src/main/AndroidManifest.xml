@@ -22,6 +22,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".SelectActivity"></activity>
+        <activity android:name=".SingleActivity"></activity>
+        <activity android:name=".VSActivity"></activity>
         <activity android:name=".TestActivity"></activity>
         <activity
                 android:name=".SettingsActivity"

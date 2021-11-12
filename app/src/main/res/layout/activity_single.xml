@@ -1,0 +1,344 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="@color/colorBackground"
+              android:orientation="vertical">
+
+    <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="70dp">
+
+        <ImageView
+                android:layout_width="140dp"
+                android:layout_height="35dp"
+                android:layout_marginTop="10dp"
+                android:src="@drawable/logo"></ImageView>
+
+        <ImageView
+                android:id="@+id/btn_home"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:layout_gravity="right"
+                android:layout_marginTop="10dp"
+                android:layout_marginRight="55dp"
+                android:src="@drawable/home"></ImageView>
+
+        <ImageView
+                android:id="@+id/btn_back"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:layout_gravity="right"
+                android:layout_marginTop="10dp"
+                android:layout_marginRight="10dp"
+                android:src="@drawable/back"></ImageView>
+    </FrameLayout>
+
+    <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="60dp">
+
+        <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+            <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="horizontal">
+
+                <ImageView
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginLeft="10dp"
+                        android:src="@drawable/time"></ImageView>
+
+                <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginLeft="3dp"
+                        android:orientation="vertical">
+
+                    <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Timer"
+                            android:textColor="#ffffff"
+                            android:textSize="20sp"
+                            android:textStyle="bold"></TextView>
+
+
+                    <TextView
+                            android:id="@+id/time_count"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal"
+                            android:text="0s"
+                            android:textColor="#ffffff"
+                            android:textSize="20sp"
+                            android:textStyle="bold"
+                            android:countDown="true"></TextView>
+                </LinearLayout>
+            </LinearLayout>
+
+
+            <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="horizontal">
+
+                <ImageView
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginLeft="10dp"
+                        android:src="@drawable/count"></ImageView>
+
+                <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginLeft="3dp"
+                        android:orientation="vertical">
+
+                    <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Count"
+                            android:textColor="#ffffff"
+                            android:textSize="20sp"
+                            android:textStyle="bold"></TextView>
+
+                    <TextView
+                            android:id="@+id/count_count"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal"
+                            android:text="0"
+                            android:textColor="#ffffff"
+                            android:textSize="20sp"
+                            android:textStyle="bold"></TextView>
+                </LinearLayout>
+            </LinearLayout>
+
+
+            <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="horizontal">
+
+                <ImageView
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginLeft="10dp"
+                        android:src="@drawable/calories"></ImageView>
+
+                <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginLeft="3dp"
+                        android:orientation="vertical">
+
+                    <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Calories"
+                            android:textColor="#ffffff"
+                            android:textSize="20sp"
+                            android:textStyle="bold"></TextView>
+
+                    <TextView
+                            android:id="@+id/calories_count"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal"
+                            android:text="0"
+                            android:textColor="#ffffff"
+                            android:textSize="20sp"
+                            android:textStyle="bold"></TextView>
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+    </FrameLayout>
+
+
+    <FrameLayout
+            android:id="@+id/activity_main_up_button"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="10dp"
+            android:background="@color/colorBackground">
+
+        <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="2dp"
+                android:layout_marginTop="2dp"
+                android:layout_marginRight="2dp"
+                android:layout_marginBottom="2dp"
+                android:gravity="center_horizontal"
+                android:background="@color/colorBackground">
+
+            <com.baidu.paddle.lite.demo.common.CameraSurfaceView
+                    android:id="@+id/sv_preview"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_centerInParent="true"
+                    android:visibility="gone"/>
+            <TextView android:layout_width="wrap_content"
+                      android:layout_height="wrap_content"
+                      android:id="@+id/overlay_text"
+                      android:textSize="30dp"
+                      android:textColor="#FFFFFF"
+                      android:layout_centerInParent="true"
+                      android:visibility="visible"></TextView>
+            <LinearLayout
+                    android:id="@+id/before_playing_control"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:visibility="visible"
+                    android:orientation="vertical">
+                <VideoView android:layout_width="300dp" android:layout_height="200dp" android:id="@+id/sample_video"></VideoView>
+                <TextView
+                        android:layout_height="wrap_content"
+                        android:layout_width="wrap_content"
+                        android:textSize="30dp"
+                        android:textColor="#FFFFFF"
+                        android:text="选择训练时间"></TextView>
+                <EditText
+
+                        android:layout_width="130dp"
+                        android:layout_height="50dp"
+                        android:id="@+id/time_picker"></EditText>
+                <Button
+                        android:id="@+id/start"
+                        android:layout_width="130dp"
+                        android:layout_height="50dp"
+                        android:layout_marginHorizontal="5dp"
+                        android:background="@drawable/mybutton"
+                        android:text="确定"
+                        android:textColor="#ffffff"
+                        android:textSize="20sp"
+                        android:textStyle="bold"></Button>
+            </LinearLayout>
+
+            <LinearLayout
+                    android:id="@+id/playing_control"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:gravity="center"
+                    android:visibility="visible">
+
+                <Button
+                        android:id="@+id/pause"
+                        android:layout_width="130dp"
+                        android:layout_height="50dp"
+                        android:layout_marginHorizontal="5dp"
+                        android:background="@drawable/mybutton"
+                        android:text="暂停"
+                        android:textColor="#ffffff"
+                        android:textSize="20sp"
+                        android:textStyle="bold"></Button>
+
+                <Button
+                        android:id="@+id/stop"
+                        android:layout_width="130dp"
+                        android:layout_height="50dp"
+                        android:layout_marginHorizontal="5dp"
+                        android:background="@drawable/mybutton"
+                        android:text="停止"
+                        android:textColor="#ffffff"
+                        android:textSize="20sp"
+                        android:textStyle="bold"></Button>
+
+                <Button
+                        android:id="@+id/remake"
+                        android:layout_width="130dp"
+                        android:layout_height="50dp"
+                        android:layout_marginHorizontal="5dp"
+                        android:background="@drawable/mybutton"
+                        android:text="重来"
+                        android:textColor="#ffffff"
+                        android:textSize="20sp"
+                        android:textStyle="bold"></Button>
+            </LinearLayout>
+
+            <LinearLayout
+                    android:id="@+id/after_playing_control"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+
+                <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="时间到！"
+                        android:textColor="#FFFFFF"
+                        android:textSize="40dp"></TextView>
+
+                <TextView
+                        android:id="@+id/total_count_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="总计："
+                        android:textColor="#ffffff"
+                        android:textSize="20sp"
+                        android:textStyle="bold"></TextView>
+
+                <TextView
+                        android:id="@+id/total_calories_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="卡路里："
+                        android:textColor="#ffffff"
+                        android:textSize="20sp"
+                        android:textStyle="bold"></TextView>
+
+                <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
+
+                    <Button
+                            android:id="@+id/after_replay"
+                            android:layout_width="130dp"
+                            android:layout_height="50dp"
+                            android:layout_marginHorizontal="5dp"
+                            android:background="@drawable/mybutton"
+                            android:text="再来一次"
+                            android:textColor="#ffffff"
+                            android:textSize="20sp"
+                            android:textStyle="bold"/>
+
+                    <Button
+                            android:id="@+id/after_home"
+                            android:layout_width="130dp"
+                            android:layout_height="50dp"
+                            android:layout_marginHorizontal="5dp"
+                            android:background="@drawable/mybutton"
+                            android:text="返回主页"
+                            android:textColor="#ffffff"
+                            android:textSize="20sp"
+                            android:textStyle="bold"/>
+                </LinearLayout>
+
+
+            </LinearLayout>
+
+
+        </RelativeLayout>
+
+
+    </FrameLayout>
+
+
+</LinearLayout>
