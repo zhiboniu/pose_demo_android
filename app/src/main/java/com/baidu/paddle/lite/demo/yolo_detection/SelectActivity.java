@@ -30,7 +30,7 @@ public class SelectActivity extends Activity implements View.OnClickListener {
         pose_a_btn = (View) findViewById(R.id.pose_a);
         pose_b_btn = (View) findViewById(R.id.pose_b);
         pose_c_btn = (View) findViewById(R.id.pose_c);
-        btn_back=(View) findViewById(R.id.btn_back);
+        btn_back = (View) findViewById(R.id.btn_back);
 
         pose_a_btn.setOnClickListener(this);
         pose_b_btn.setOnClickListener(this);
@@ -39,9 +39,9 @@ public class SelectActivity extends Activity implements View.OnClickListener {
 
         mode = getIntent().getStringExtra("mode");
         TextView title = (TextView) findViewById(R.id.select_title);
-        if (mode.equals("single")) {
+        if ("single".equals(mode)) {
             title.setText("单人训练模式");
-        } else if (mode.equals("vs")) {
+        } else if ("vs".equals(mode)) {
             title.setText("双人竞技模式");
         }
     }
@@ -54,19 +54,20 @@ public class SelectActivity extends Activity implements View.OnClickListener {
                 finish();
                 return;
             case R.id.pose_a:
-                pose = "dumbbell";
+                pose = "pose_a";
                 break;
             case R.id.pose_b:
-                pose = "chair_posture";
+                pose = "pose_b";
                 break;
             case R.id.pose_c:
-                pose = "squat";
+                pose = "pose_c";
                 break;
+            default:
         }
         Intent i = new Intent();
-        if (mode.equals("single")) {
+        if ("single".equals(mode)) {
             i = new Intent(SelectActivity.this, SingleActivity.class);
-        } else if (mode.equals("vs")) {
+        } else if ("vs".equals(mode)) {
             i = new Intent(SelectActivity.this, VSActivity.class);
         }
         i.putExtra("pose", pose);
