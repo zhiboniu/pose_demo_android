@@ -22,6 +22,16 @@ int64_t ShapeProduction(const std::vector<int64_t> &shape) {
   return res;
 }
 
+void Permute(cv::Mat* im, float *base) {
+  (*im).convertTo(*im, CV_32FC3);
+  int rh = im->rows;
+  int rw = im->cols;
+  int rc = im->channels();
+  for (int i = 0; i < rc; ++i) {
+    cv::extractChannel(*im, cv::Mat(rh, rw, CV_32FC1, base + i * rh * rw), i);
+  }
+}
+
 void NHWC3ToNC3HW(const float *src, float *dst, const float *mean,
                   const float *std, int width, int height) {
   int size = height * width;

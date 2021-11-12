@@ -73,6 +73,11 @@ private:
                        double postprocessTime, cv::Mat *rgbaImage,
                        std::vector<RESULT_KEYPOINT> &results_kpts,
                        std::vector<RESULT> &results);
+  void Action_Process(cv::Mat *rgbaImage,
+                      std::vector<RESULT_KEYPOINT> &results_kpts,
+                      std::vector<RESULT> &results,
+                      int actionid,
+                      bool single_person);
 
 private:
   std::shared_ptr<Detector> detector_;

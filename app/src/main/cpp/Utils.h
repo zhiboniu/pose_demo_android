@@ -19,6 +19,10 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include <opencv2/core.hpp>
+#include <opencv2/highgui/highgui.hpp>
+#include <opencv2/imgcodecs.hpp>
+#include <opencv2/imgproc.hpp>
 
 #define TAG "JNI"
 #define LOGD(...) __android_log_print(ANDROID_LOG_DEBUG, TAG, __VA_ARGS__)
@@ -93,3 +97,4 @@ void NHWC3ToNC3HW_bn(const float *src, float *dst, const float *mean,
 
 void NHWC1ToNC1HW(const float *src, float *dst, const float *mean,
                   const float *std, int width, int height);
+void Permute(cv::Mat* im, float *base);

@@ -50,7 +50,7 @@ public:
                std::vector<std::vector<float>> &center_bs,
                std::vector<std::vector<float>> &scale_bs,
                float expandratio = 0.2);
-  RESULT FindMaxRect(std::vector<RESULT> *results);
+  void FindMaxRect(std::vector<RESULT> *results, std::vector<RESULT> &rect_buff, int findnum);
   float get_threshold() { return scoreThreshold_; };
 
 private:

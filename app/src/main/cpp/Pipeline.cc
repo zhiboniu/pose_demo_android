@@ -27,7 +27,7 @@ Pipeline::Pipeline(const std::string &modelDir, const std::string &labelPath,
                                scoreThreshold));
   detector_keypoint_.reset(
       new Detector_KeyPoint(modelDir, labelPath, cpuThreadNum, cpuPowerMode,
-                            192, 256, inputMean, inputStd, 0.2));
+                            96, 128, inputMean, inputStd, 0.2));
 }
 
 void Pipeline::VisualizeResults(const std::vector<RESULT> &results,
@@ -150,18 +150,40 @@ void Pipeline::VisualizeStatus(double readGLFBOTime, double writeGLTextureTime,
   offset.y += textSize.height;
   cv::putText(*rgbaImage, text, offset, fontFace, fontScale, fontColor,
               fontThickness);
-  //print action count on screen
-  int action_count = get_action_count();
-  //check_lateral_raise
-  //check_stand_press
-  //check_deep_down
-  if (!results.empty()) {
-    action_count = check_stand_press(results_kpts[0].keypoints);
+}
+
+void Pipeline::Action_Process(cv::Mat *rgbaImage,
+                              std::vector<RESULT_KEYPOINT> &results_kpts,
+                              std::vector<RESULT> &results,
+                              int actionid,
+                              bool single_person) {
+  char text[255];
+  cv::Scalar fontColor = cv::Scalar(255, 0, 0);
+  int fontFace = cv::FONT_HERSHEY_PLAIN;
+  double fontScale = 2.f;
+  float fontThickness = 2;
+  cv::Size textSize =
+      cv::getTextSize(text, fontFace, fontScale, fontThickness, nullptr);
+  textSize.height *= 1.25f;
+  cv::Point2d offset(10, textSize.height*5 + 15);
+
+  if (single_person) {
+    //print action count on screen
+    int action_count = get_action_count(0);
+    //1: check_lateral_raise
+    //2: check_stand_press
+    //3: check_deep_down
+    if (!results.empty()) {
+      action_count = single_action_check(results_kpts[0].keypoints, results[0].h, actionid, 0);
+    }
+    sprintf(text, "Action Counts: %d", action_count);
+    offset.y += textSize.height;
+    cv::putText(*rgbaImage, text, offset, fontFace, fontScale, fontColor,
+                fontThickness);
   }
-  sprintf(text, "Action Counts: %d", action_count);
-  offset.y += textSize.height;
-  cv::putText(*rgbaImage, text, offset, fontFace, fontScale, fontColor,
-              fontThickness);
+  else {
+    double_action_check(results_kpts, results, actionid);
+  }
 }
 
 static std::vector<RESULT> results;
@@ -179,7 +201,7 @@ bool Pipeline::Process(int inTexureId, int outTextureId, int textureWidth,
                                   &readGLFBOTime);
 
   // Feed the image, run inference and parse the results
-  if (idx % 2 == 0 or results.empty()) {
+  if (idx % 1 == 0 or results.empty()) {
     idx = 0;
     results.clear();
     detector_->Predict(rgbaImage, &results, &preprocessTime, &predictTime,
@@ -200,6 +222,7 @@ bool Pipeline::Process(int inTexureId, int outTextureId, int textureWidth,
   // Visualize the status(performance data) to the origin image
   VisualizeStatus(readGLFBOTime, writeGLTextureTime, preprocessTime_kpts,
                   predictTime_kpts, postprocessTime_kpts, &rgbaImage, results_kpts, results);
+  Action_Process(&rgbaImage, results_kpts, results, 3, true);
 
   // Dump modified image if savedImagePath is set
   if (!savedImagePath.empty()) {
