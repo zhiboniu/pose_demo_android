@@ -39,10 +39,12 @@ public class MainActivity extends Activity implements View.OnClickListener {
         switch (v.getId()) {
             case R.id.main_select_singlemode:
                 Intent i = new Intent(MainActivity.this, SelectActivity.class);
+                i.putExtra("mode","single");
                 startActivity(i);
                 break;
             case R.id.main_select_vsmode:
                 Intent j = new Intent(MainActivity.this, SelectActivity.class);
+                j.putExtra("mode","vs");
                 startActivity(j);
                 break;
             case R.id.pplogo:
