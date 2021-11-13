@@ -147,6 +147,7 @@ public class SingleActivity extends Activity implements View.OnClickListener, Ca
         action_count = 0;
 
         pose = getIntent().getStringExtra("pose");
+        /*
         String uri = "android.resource://" + getPackageName() + "/";
         if ("pose_a".equals(pose)) {
             uri += R.raw.pose_a_single;
@@ -165,7 +166,7 @@ public class SingleActivity extends Activity implements View.OnClickListener, Ca
             }
         });
         sample_video.start();
-
+        */
         pageControl(1);
     }
 
