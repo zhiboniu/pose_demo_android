@@ -75,7 +75,7 @@ private:
   //
   std::string arch_ = "PicoDet";
   std::vector<int> fpn_stride_ = {8, 16, 32, 64};
-  float score_threshold = 0.3;
+  float score_threshold = 0.7;
   float nms_threshold = 0.5;
 };
 
