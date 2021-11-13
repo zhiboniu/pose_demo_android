@@ -288,7 +288,6 @@ void Detector::PicoDetPostProcess(std::vector<RESULT> *results,
       results->push_back(box);
     }
   }
-  LOGD("DEBUG: result number: %d", results->size());
 }
 
 void nms(std::vector<RESULT> &input_boxes, float nms_threshold) {

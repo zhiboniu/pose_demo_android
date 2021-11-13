@@ -95,7 +95,6 @@ void Pipeline::VisualizeKptsResults(
   float kpts_threshold = detector_keypoint_->get_threshold();
   for (int batchid = 0; batchid < results_kpts.size(); batchid++) {
     for (int i = 0; i < results_kpts[batchid].num_joints; i++) {
-      LOGD("DEBUG: Detector_KeyPoint res: %f %f %f",results_kpts[batchid].keypoints[i * 3],results_kpts[batchid].keypoints[i * 3],results_kpts[batchid].keypoints[i * 3]);
       if (results_kpts[batchid].keypoints[i * 3] > kpts_threshold) {
         int x_coord = int(results_kpts[batchid].keypoints[i * 3 + 1]);
         int y_coord = int(results_kpts[batchid].keypoints[i * 3 + 2]);
@@ -174,7 +173,7 @@ void Pipeline::Action_Process(cv::Mat *rgbaImage,
     //2: check_stand_press
     //3: check_deep_down
     if (!results.empty()) {
-      action_count = single_action_check(results_kpts[0].keypoints, results[0].h, actionid, 0);
+      action_count = single_action_check(results_kpts[0].keypoints, results[0].h*rgbaImage->rows, 3, 0);
     }
     sprintf(text, "Action Counts: %d", action_count);
     offset.y += textSize.height;
@@ -220,8 +219,8 @@ std::vector<int> Pipeline::Process(int inTexureId, int outTextureId, int texture
   VisualizeKptsResults(results, results_kpts, &rgbaImage);
 
   // Visualize the status(performance data) to the origin image
-  VisualizeStatus(readGLFBOTime, writeGLTextureTime, preprocessTime_kpts,
-                  predictTime_kpts, postprocessTime_kpts, &rgbaImage, results_kpts, results);
+  VisualizeStatus(readGLFBOTime, writeGLTextureTime, preprocessTime+preprocessTime_kpts,
+                  predictTime+predictTime_kpts, postprocessTime+postprocessTime_kpts, &rgbaImage, results_kpts, results);
   Action_Process(&rgbaImage, results_kpts, results, actionid, single);
 
   // Dump modified image if savedImagePath is set

@@ -145,17 +145,14 @@ void dark_parse(std::vector<float> &heatmap, std::vector<int64_t> &dim,
   float dyy = 0.25 * (yu2 - 2 * xy + yd2);
 
   // finally get offset by derivative and hassian, which combined by dx/dy and
-  // dxx/dyy
   if (dxx * dyy - dxy * dxy != 0) {
     float M[2][2] = {dxx, dxy, dxy, dyy};
     float D[2] = {dx, dy};
     cv::Mat hassian(2, 2, CV_32F, M);
     cv::Mat derivative(2, 1, CV_32F, D);
-    cv::Mat offset = -hassian.inv() * derivative;
+    cv::Mat offset = -(hassian.inv() * derivative);
     coords[ch * 2] += offset.at<float>(0, 0);
-//    LOGD("DEBUG: heatmap offset x:%d", offset.at<float>(0, 0));
     coords[ch * 2 + 1] += offset.at<float>(1, 0);
-//    LOGD("DEBUG: heatmap offset x:%d", offset.at<float>(1, 0));
   }
 }
 

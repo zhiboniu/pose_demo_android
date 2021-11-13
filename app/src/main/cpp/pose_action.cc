@@ -149,8 +149,8 @@ int check_deep_down2(std::vector<float> &kpts_sframe, float h, int recid) {
   if(kpts_sframe.empty()) {
     return action_recs[recid].action_count;
   }
-  float down_thres=0.2;
-  float up_thres=0.3;
+  float down_thres=0.12;
+  float up_thres=0.16;
   float xy_ratio;
   if (kpts_sframe[kpts[0]*3] + kpts_sframe[kpts[1]*3] >= kpts_sframe[kpts[2]*3] + kpts_sframe[kpts[3]*3]) {
     int ydiff = std::max(-kpts_sframe[kpts[0]*3 + 2] + kpts_sframe[kpts[1]*3 + 2], 0.f);
