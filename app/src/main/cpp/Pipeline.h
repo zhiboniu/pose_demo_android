@@ -34,8 +34,8 @@ public:
            int inputWidth, int inputHeight, const std::vector<float> &inputMean,
            const std::vector<float> &inputStd, float scoreThreshold);
 
-  bool Process(int inTextureId, int outTextureId, int textureWidth,
-               int textureHeight, std::string savedImagePath);
+  std::vector<int> Process(int inTextureId, int outTextureId, int textureWidth,
+               int textureHeight, std::string savedImagePath, int actionid, bool single);
 
 private:
   // Read pixels from FBO texture to CV image

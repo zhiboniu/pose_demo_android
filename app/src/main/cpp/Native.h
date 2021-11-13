@@ -97,6 +97,18 @@ inline jlongArray int64_vector_to_jlongarray(JNIEnv *env,
   return result;
 }
 
+inline jintArray intvector_to_jintarray(JNIEnv *env,
+                                             const std::vector<int> &vec) {
+  jintArray result = env->NewIntArray(vec.size());
+  jint *buf = new jint[vec.size()];
+  for (size_t i = 0; i < vec.size(); ++i) {
+    buf[i] = (jint)vec[i];
+  }
+  env->SetIntArrayRegion(result, 0, vec.size(), buf);
+  delete[] buf;
+  return result;
+}
+
 inline std::vector<int64_t> jlongarray_to_int64_vector(JNIEnv *env,
                                                        jlongArray data) {
   int data_size = env->GetArrayLength(data);
