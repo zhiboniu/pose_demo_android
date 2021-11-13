@@ -61,17 +61,18 @@ Java_com_baidu_paddle_lite_demo_yolo_1detection_Native_nativeRelease(
  * Method:    nativeProcess
  * Signature: (JIIIILjava/lang/String;)Z
  */
-JNIEXPORT jboolean JNICALL
+JNIEXPORT jintArray JNICALL
 Java_com_baidu_paddle_lite_demo_yolo_1detection_Native_nativeProcess(
     JNIEnv *env, jclass thiz, jlong ctx, jint inTextureId, jint outTextureId,
-    jint textureWidth, jint textureHeight, jstring jsavedImagePath) {
+    jint textureWidth, jint textureHeight, jstring jsavedImagePath, jint actionid, jboolean single) {
   if (ctx == 0) {
     return JNI_FALSE;
   }
   std::string savedImagePath = jstring_to_cpp_string(env, jsavedImagePath);
   Pipeline *pipeline = reinterpret_cast<Pipeline *>(ctx);
-  return pipeline->Process(inTextureId, outTextureId, textureWidth,
-                           textureHeight, savedImagePath);
+  std::vector<int> records = pipeline->Process(inTextureId, outTextureId, textureWidth,
+                           textureHeight, savedImagePath, actionid, single);
+  return intvector_to_jintarray(env, records);
 }
 
 #ifdef __cplusplus

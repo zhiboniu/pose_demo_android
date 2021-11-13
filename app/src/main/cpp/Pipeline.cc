@@ -188,8 +188,8 @@ void Pipeline::Action_Process(cv::Mat *rgbaImage,
 
 static std::vector<RESULT> results;
 static int idx = 0;
-bool Pipeline::Process(int inTexureId, int outTextureId, int textureWidth,
-                       int textureHeight, std::string savedImagePath) {
+std::vector<int> Pipeline::Process(int inTexureId, int outTextureId, int textureWidth,
+                       int textureHeight, std::string savedImagePath, int actionid, bool single) {
   static double readGLFBOTime = 0, writeGLTextureTime = 0;
   double preprocessTime = 0, predictTime = 0, postprocessTime = 0;
   double preprocessTime_kpts = 0, predictTime_kpts = 0,
@@ -222,7 +222,7 @@ bool Pipeline::Process(int inTexureId, int outTextureId, int textureWidth,
   // Visualize the status(performance data) to the origin image
   VisualizeStatus(readGLFBOTime, writeGLTextureTime, preprocessTime_kpts,
                   predictTime_kpts, postprocessTime_kpts, &rgbaImage, results_kpts, results);
-  Action_Process(&rgbaImage, results_kpts, results, 3, true);
+  Action_Process(&rgbaImage, results_kpts, results, actionid, single);
 
   // Dump modified image if savedImagePath is set
   if (!savedImagePath.empty()) {
@@ -233,5 +233,5 @@ bool Pipeline::Process(int inTexureId, int outTextureId, int textureWidth,
 
   // Write back to texture2D
   WriteRGBAImageBackToGLTexture(rgbaImage, outTextureId, &writeGLTextureTime);
-  return true;
+  return std::vector<int> {get_action_count(0), get_action_count(1)};
 }

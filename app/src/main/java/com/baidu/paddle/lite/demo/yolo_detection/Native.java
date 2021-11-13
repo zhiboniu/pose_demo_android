@@ -42,7 +42,8 @@ public class Native {
         if (ctx == 0) {
             return false;
         }
-        return nativeProcess(ctx, inTextureId, outTextureId, textureWidth, textureHeight, savedImagePath);
+        int[] records =  nativeProcess(ctx, inTextureId, outTextureId, textureWidth, textureHeight, savedImagePath, 1, true);
+        return true;
     }
 
     public static native long nativeInit(String modelDir,
@@ -57,5 +58,5 @@ public class Native {
 
     public static native boolean nativeRelease(long ctx);
 
-    public static native boolean nativeProcess(long ctx, int inTextureId, int outTextureId, int textureWidth, int textureHeight, String savedImagePath);
+    public static native int[] nativeProcess(long ctx, int inTextureId, int outTextureId, int textureWidth, int textureHeight, String savedImagePath, int actionid, boolean single);
 }
