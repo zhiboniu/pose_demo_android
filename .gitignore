@@ -127,3 +127,5 @@ app/OpenCV/
 app/PaddleLite/
 app/cache/
 app/.cxx
+
+app/src/main/models/
