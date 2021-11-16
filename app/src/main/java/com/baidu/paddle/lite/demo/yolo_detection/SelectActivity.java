@@ -45,10 +45,10 @@ public class SelectActivity extends Activity implements View.OnClickListener {
                 finish();
                 return;
             case R.id.pose_a:
-                pose = 1;
+                pose = 2;
                 break;
             case R.id.pose_b:
-                pose = 2;
+                pose = 1;
                 break;
             case R.id.pose_c:
                 pose = 3;

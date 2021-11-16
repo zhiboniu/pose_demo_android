@@ -38,18 +38,17 @@ public class Native {
         return nativeRelease(ctx);
     }
 
-    public boolean process(int inTextureId, int outTextureId, int textureWidth, int textureHeight, String savedImagePath) {
-        if (ctx == 0) {
-            return false;
+    public int[] process(int inTextureId, int outTextureId, int textureWidth, int textureHeight, String savedImagePath,int actionid,boolean single) {
+        if(ctx==0){
+            return null;
+        }else{
+            return nativeProcess(ctx, inTextureId, outTextureId, textureWidth, textureHeight, savedImagePath, actionid, single);
         }
-        int[] records = nativeProcess(ctx, inTextureId, outTextureId, textureWidth, textureHeight, savedImagePath, 1, true);
-        return true;
     }
 
-    public int[] getActionCount(int inTextureId, int outTextureId, int textureWidth, int textureHeight, String savedImagePath, int actionid, boolean single) {
-        return nativeProcess(ctx, inTextureId, outTextureId, textureWidth, textureHeight, savedImagePath, actionid, single);
+    public boolean reset(){
+        return nativeReset(ctx);
     }
-
     public static native long nativeInit(String modelDir,
                                          String labelPath,
                                          int cpuThreadNum,

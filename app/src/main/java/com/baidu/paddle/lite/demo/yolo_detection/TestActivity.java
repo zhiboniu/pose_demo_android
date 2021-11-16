@@ -84,7 +84,7 @@ public class TestActivity extends Activity implements View.OnClickListener, Came
         synchronized (this) {
             savedImagePath = TestActivity.this.savedImagePath;
         }
-        boolean modified = predictor.process(inTextureId, outTextureId, textureWidth, textureHeight, savedImagePath);
+        boolean modified = (predictor.process(inTextureId, outTextureId, textureWidth, textureHeight, savedImagePath,1,true)==null);
         if (!savedImagePath.isEmpty()) {
             synchronized (this) {
                 TestActivity.this.savedImagePath = "";
@@ -94,6 +94,7 @@ public class TestActivity extends Activity implements View.OnClickListener, Came
         if (lastFrameIndex >= 30) {
             final int fps = (int) (lastFrameIndex * 1e9 / (System.nanoTime() - lastFrameTime));
             runOnUiThread(new Runnable() {
+                @Override
                 public void run() {
                     tvStatus.setText(Integer.toString(fps) + "fps");
                 }

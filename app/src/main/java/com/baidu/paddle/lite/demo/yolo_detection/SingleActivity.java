@@ -140,15 +140,15 @@ public class SingleActivity extends Activity implements View.OnClickListener, Ca
 
         //演示视频播放
         String uri = "android.resource://" + getPackageName() + "/";
-        if (pose == 1) {
+        if (pose == 2) {
             uri += R.raw.pose_a_single;
-        } else if (pose == 2) {
+        } else if (pose == 1) {
             uri += R.raw.pose_b_single;
         } else if (pose == 3) {
             uri += R.raw.pose_c_single;
         }
         //演示视频
-        VideoView sampleVideo =  findViewById(R.id.sample_video);
+        VideoView sampleVideo = findViewById(R.id.sample_video);
         sampleVideo.setVideoPath(uri);
         sampleVideo.setVideoURI(Uri.parse(uri));
         sampleVideo.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
@@ -239,6 +239,7 @@ public class SingleActivity extends Activity implements View.OnClickListener, Ca
             public void onFinish() {
                 overlayText.setText("");
                 showToast("训练开始！");
+                predictor.reset();
                 time.start();
                 playing = true;
 
@@ -358,13 +359,15 @@ public class SingleActivity extends Activity implements View.OnClickListener, Ca
         synchronized (this) {
             savedImagePath = SingleActivity.this.savedImagePath;
         }
-        boolean modified = predictor.process(inTextureId, outTextureId, textureWidth, textureHeight, savedImagePath);
+        int[] processResult = predictor.process(inTextureId, outTextureId, textureWidth, textureHeight, savedImagePath, 1, true);
+        boolean modified = (processResult == null);
         if (!savedImagePath.isEmpty()) {
             synchronized (this) {
                 SingleActivity.this.savedImagePath = "";
             }
         }
-        actionCount = predictor.getActionCount(inTextureId, outTextureId, textureWidth, textureHeight, savedImagePath, pose, true)[0];
+
+        actionCount = modified ? 0 : processResult[0];
         return modified;
     }
 
