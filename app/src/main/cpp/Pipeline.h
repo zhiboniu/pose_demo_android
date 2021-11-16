@@ -37,6 +37,8 @@ public:
   std::vector<int> Process(int inTextureId, int outTextureId, int textureWidth,
                int textureHeight, std::string savedImagePath, int actionid, bool single);
 
+  void ClearCount();
+
 private:
   // Read pixels from FBO texture to CV image
   void CreateRGBAImageFromGLFBOTexture(int textureWidth, int textureHeight,

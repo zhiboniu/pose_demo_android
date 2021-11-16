@@ -26,6 +26,7 @@ struct action_helper {
   int latency = 0;
 };
 
+void clear_action_count();
 int get_action_count(int recid);
 float get_xyratio(std::vector<float> &kpts_sframe, int index_x, int index_y);
 bool get_xyhigher(std::vector<float> &kpts_sframe, int index_x, int index_y);

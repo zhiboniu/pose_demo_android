@@ -75,6 +75,17 @@ Java_com_baidu_paddle_lite_demo_yolo_1detection_Native_nativeProcess(
   return intvector_to_jintarray(env, records);
 }
 
+JNIEXPORT jboolean JNICALL
+Java_com_baidu_paddle_lite_demo_yolo_1detection_Native_nativeReset(
+    JNIEnv *env, jclass thiz, jlong ctx) {
+  if (ctx == 0) {
+    return JNI_FALSE;
+  }
+  Pipeline *pipeline = reinterpret_cast<Pipeline *>(ctx);
+  pipeline->ClearCount();
+  return JNI_TRUE;
+}
+
 #ifdef __cplusplus
 }
 #endif

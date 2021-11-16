@@ -234,3 +234,7 @@ std::vector<int> Pipeline::Process(int inTexureId, int outTextureId, int texture
   WriteRGBAImageBackToGLTexture(rgbaImage, outTextureId, &writeGLTextureTime);
   return std::vector<int> {get_action_count(0), get_action_count(1)};
 }
+
+void Pipeline::ClearCount() {
+  clear_action_count();
+}

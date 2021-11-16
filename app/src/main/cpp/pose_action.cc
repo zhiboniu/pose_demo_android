@@ -35,6 +35,12 @@ keypoint indexes:
 
 std::vector<action_helper> action_recs(2);
 
+void clear_action_count() {
+  action_recs[0].action_count = 0;
+  action_recs[1].action_count = 0;
+  return;
+}
+
 int get_action_count(int recid) {
   return action_recs[recid].action_count;
 }

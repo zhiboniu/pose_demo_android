@@ -63,4 +63,6 @@ public class Native {
     public static native boolean nativeRelease(long ctx);
 
     public static native int[] nativeProcess(long ctx, int inTextureId, int outTextureId, int textureWidth, int textureHeight, String savedImagePath, int actionid, boolean single);
+
+    public static native boolean nativeReset(long ctx);
 }
