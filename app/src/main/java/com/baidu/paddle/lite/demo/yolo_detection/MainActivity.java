@@ -9,9 +9,6 @@ import android.widget.Toast;
 
 public class MainActivity extends Activity implements View.OnClickListener {
     private int clickedLogo;
-    private View single_btn;
-    private View vs_btn;
-    private View logo;
 
     private Toast myToast;
 
@@ -23,17 +20,19 @@ public class MainActivity extends Activity implements View.OnClickListener {
     }
 
     private void initView() {
-        single_btn = (View) findViewById(R.id.main_select_singlemode);
-        vs_btn = (View) findViewById(R.id.main_select_vsmode);
-        logo = (View) findViewById(R.id.pplogo);
-        single_btn.setOnClickListener(this);
-        vs_btn.setOnClickListener(this);
+        View singleBtn = findViewById(R.id.main_select_singlemode);
+        View vsBtn = findViewById(R.id.main_select_vsmode);
+        View logo = findViewById(R.id.pplogo);
+        singleBtn.setOnClickListener(this);
+        vsBtn.setOnClickListener(this);
         logo.setOnClickListener(this);
         clickedLogo = 0;
     }
 
     @Override
     public void onClick(View v) {
+        final int clickedLogoTimes = 7;
+        final int clickedLogoToastTimes = 2;
         switch (v.getId()) {
             case R.id.main_select_singlemode:
                 Intent i = new Intent(MainActivity.this, SelectActivity.class);
@@ -47,12 +46,12 @@ public class MainActivity extends Activity implements View.OnClickListener {
                 break;
             case R.id.pplogo:
                 clickedLogo++;
-                if (clickedLogo == 7) {
+                if (clickedLogo == clickedLogoTimes) {
                     clickedLogo = 0;
                     Intent k = new Intent(MainActivity.this, TestActivity.class);
                     startActivity(k);
-                } else if (clickedLogo >= 2) {
-                    String s = "再点击" + String.valueOf(7 - clickedLogo) + "次进入测试模式。";
+                } else if (clickedLogo >= clickedLogoToastTimes) {
+                    String s = "再点击" + (clickedLogoTimes - clickedLogo) + "次进入测试模式。";
                     showToast(s);
                 }
             default:
@@ -62,10 +61,9 @@ public class MainActivity extends Activity implements View.OnClickListener {
     private void showToast(String text) {
         if (myToast == null) {
             myToast = Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT);
-            myToast.show();
         } else {
             myToast.setText(text);
-            myToast.show();
         }
+        myToast.show();
     }
 }

@@ -14,8 +14,16 @@
                 android:layout_width="140dp"
                 android:layout_height="35dp"
                 android:layout_marginTop="10dp"
-                android:src="@drawable/logo"></ImageView>
+                android:src="@drawable/logo"/>
 
+        <TextView
+                android:layout_height="50dp"
+                android:layout_width="180dp"
+                android:id="@+id/title_single"
+                android:layout_marginTop="10dp"
+                android:layout_marginLeft="150dp"
+                android:textSize="30dp"
+                android:textColor="#FFFFFF"/>
         <ImageView
                 android:id="@+id/btn_home"
                 android:layout_width="35dp"
@@ -23,7 +31,7 @@
                 android:layout_gravity="right"
                 android:layout_marginTop="10dp"
                 android:layout_marginRight="55dp"
-                android:src="@drawable/home"></ImageView>
+                android:src="@drawable/home"/>
 
         <ImageView
                 android:id="@+id/btn_back"
@@ -32,7 +40,7 @@
                 android:layout_gravity="right"
                 android:layout_marginTop="10dp"
                 android:layout_marginRight="10dp"
-                android:src="@drawable/back"></ImageView>
+                android:src="@drawable/back"/>
     </FrameLayout>
 
     <FrameLayout
@@ -55,7 +63,7 @@
                         android:layout_height="50dp"
                         android:layout_gravity="center_vertical"
                         android:layout_marginLeft="10dp"
-                        android:src="@drawable/time"></ImageView>
+                        android:src="@drawable/time"/>
 
                 <LinearLayout
                         android:layout_width="match_parent"
@@ -69,7 +77,7 @@
                             android:text="Timer"
                             android:textColor="#ffffff"
                             android:textSize="20sp"
-                            android:textStyle="bold"></TextView>
+                            android:textStyle="bold"/>
 
 
                     <TextView
@@ -81,7 +89,7 @@
                             android:textColor="#ffffff"
                             android:textSize="20sp"
                             android:textStyle="bold"
-                            android:countDown="true"></TextView>
+                            android:countDown="true"/>
                 </LinearLayout>
             </LinearLayout>
 
@@ -197,7 +205,7 @@
                       android:textSize="30dp"
                       android:textColor="#FFFFFF"
                       android:layout_centerInParent="true"
-                      android:visibility="visible"></TextView>
+                      android:visibility="visible"/>
             <LinearLayout
                     android:id="@+id/before_playing_control"
                     android:layout_width="match_parent"
@@ -205,18 +213,33 @@
                     android:gravity="center"
                     android:visibility="visible"
                     android:orientation="vertical">
-                <VideoView android:layout_width="300dp" android:layout_height="200dp" android:id="@+id/sample_video"></VideoView>
+                <VideoView
+                        android:layout_width="300dp"
+                        android:layout_height="400dp"
+                        android:id="@+id/sample_video"
+
+                />
                 <TextView
                         android:layout_height="wrap_content"
                         android:layout_width="wrap_content"
                         android:textSize="30dp"
                         android:textColor="#FFFFFF"
-                        android:text="选择训练时间"></TextView>
-                <EditText
+                        android:text="选择训练时间"/>
+                <TextView
 
-                        android:layout_width="130dp"
+                        android:layout_width="wrap_content"
                         android:layout_height="50dp"
-                        android:id="@+id/time_picker"></EditText>
+                        android:textSize="30dp"
+                        android:textColor="#FFFFFF"
+                        android:id="@+id/time_show"
+                        android:text="15s"/>
+                <SeekBar
+                        android:layout_width="200dp"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/time_picker"
+                        android:max="300"
+                        android:min="5"
+                        android:progress="15"/>
                 <Button
                         android:id="@+id/start"
                         android:layout_width="130dp"
@@ -226,7 +249,7 @@
                         android:text="确定"
                         android:textColor="#ffffff"
                         android:textSize="20sp"
-                        android:textStyle="bold"></Button>
+                        android:textStyle="bold"/>
             </LinearLayout>
 
             <LinearLayout
@@ -246,7 +269,7 @@
                         android:text="暂停"
                         android:textColor="#ffffff"
                         android:textSize="20sp"
-                        android:textStyle="bold"></Button>
+                        android:textStyle="bold"/>
 
                 <Button
                         android:id="@+id/stop"
@@ -257,7 +280,7 @@
                         android:text="停止"
                         android:textColor="#ffffff"
                         android:textSize="20sp"
-                        android:textStyle="bold"></Button>
+                        android:textStyle="bold"/>
 
                 <Button
                         android:id="@+id/remake"
@@ -268,7 +291,7 @@
                         android:text="重来"
                         android:textColor="#ffffff"
                         android:textSize="20sp"
-                        android:textStyle="bold"></Button>
+                        android:textStyle="bold"/>
             </LinearLayout>
 
             <LinearLayout
@@ -284,7 +307,7 @@
                         android:layout_height="wrap_content"
                         android:text="时间到！"
                         android:textColor="#FFFFFF"
-                        android:textSize="40dp"></TextView>
+                        android:textSize="40dp"/>
 
                 <TextView
                         android:id="@+id/total_count_text"
@@ -293,7 +316,7 @@
                         android:text="总计："
                         android:textColor="#ffffff"
                         android:textSize="20sp"
-                        android:textStyle="bold"></TextView>
+                        android:textStyle="bold"/>
 
                 <TextView
                         android:id="@+id/total_calories_text"
@@ -302,7 +325,7 @@
                         android:text="卡路里："
                         android:textColor="#ffffff"
                         android:textSize="20sp"
-                        android:textStyle="bold"></TextView>
+                        android:textStyle="bold"/>
 
                 <LinearLayout
                         android:layout_width="wrap_content"
