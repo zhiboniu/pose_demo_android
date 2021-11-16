@@ -42,8 +42,12 @@ public class Native {
         if (ctx == 0) {
             return false;
         }
-        int[] records =  nativeProcess(ctx, inTextureId, outTextureId, textureWidth, textureHeight, savedImagePath, 1, true);
+        int[] records = nativeProcess(ctx, inTextureId, outTextureId, textureWidth, textureHeight, savedImagePath, 1, true);
         return true;
+    }
+
+    public int[] getActionCount(int inTextureId, int outTextureId, int textureWidth, int textureHeight, String savedImagePath, int actionid, boolean single) {
+        return nativeProcess(ctx, inTextureId, outTextureId, textureWidth, textureHeight, savedImagePath, actionid, single);
     }
 
     public static native long nativeInit(String modelDir,

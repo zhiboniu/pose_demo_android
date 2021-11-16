@@ -10,7 +10,6 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -25,51 +24,37 @@ import com.baidu.paddle.lite.demo.common.Utils;
 import java.text.DecimalFormat;
 
 
-public class SingleActivity extends Activity implements View.OnClickListener, CameraSurfaceView.OnTextureChangedListener {
+public class SingleActivity extends Activity implements View.OnClickListener, CameraSurfaceView.OnTextureChangedListener, SeekBar.OnSeekBarChangeListener {
     CameraSurfaceView svPreview;
     String savedImagePath = "";
-    int lastFrameIndex = 0;
-    long lastFrameTime;
     Native predictor = new Native();
-
+    //上方指示器
     private TextView timer;
     private TextView count;
     private TextView calories;
-
-    private int count_int;
-
+    //运行状态变量
     private boolean playing;
     private boolean pausing;
-
+    //主要界面
     private View beforePlayingControl;
     private View playingControl;
     private View afterPlayingControl;
     private int page;
-
-    private Button btn_start;
-
-    private Button btn_pause;
-    private Button btn_stop;
-    private Button btn_remake;
-    private Button btn_after_replay;
-    private Button btn_after_home;
-
-    private View btn_back;
-    private View btn_home;
-
+    //提示工具
     private Toast myToast;
-
-    private TextView overlay_text;
-
+    private TextView overlayText;
+    //主计时器
     private CountDownTimer time;
     private long millisUntilFinished;
+    //动作计数
+    private int actionCount;
+    private final double[] caloriesPerAction = {0, 100, 100, 100};//todo 改成卡路里数值
+    //动作代码
+    private int pose;
 
-    private int action_count;
-    private final double calories_per_action = 100;
-
-    private String pose;
-
-    private VideoView sample_video;
+    //时间选择器
+    private int timeSecond = 15;
+    private TextView timeShow;
 
     @Override
     protected void onCreate(Bundle savedInstanceBundle) {
@@ -86,9 +71,8 @@ public class SingleActivity extends Activity implements View.OnClickListener, Ca
     @Override
     protected void onResume() {
         super.onResume();
-        // Reload settings and re-initialize the predictor
-        checkAndUpdateSettings();
         // Open camera until the permissions have been granted
+        checkAndUpdateSettings();
         if (!checkAllPermissions()) {
             svPreview.disableCamera();
         }
@@ -110,63 +94,76 @@ public class SingleActivity extends Activity implements View.OnClickListener, Ca
     }
 
     private void initView() {
-        svPreview = (CameraSurfaceView) findViewById(R.id.sv_preview);
-
-        timer = (TextView) findViewById(R.id.time_count);
-        count = (TextView) findViewById(R.id.count_count);
-        calories = (TextView) findViewById(R.id.calories_count);
-
-        svPreview.setOnTextureChangedListener(this);
-
-        beforePlayingControl = (View) findViewById(R.id.before_playing_control);
-        playingControl = (View) findViewById(R.id.playing_control);
-        afterPlayingControl = (View) findViewById(R.id.after_playing_control);
-
-        btn_start = (Button) findViewById(R.id.start);
-        btn_pause = (Button) findViewById(R.id.pause);
-        btn_stop = (Button) findViewById(R.id.stop);
-        btn_remake = (Button) findViewById(R.id.remake);
-        btn_after_replay = (Button) findViewById(R.id.after_replay);
-        btn_after_home = (Button) findViewById(R.id.after_home);
-        btn_back = (ImageView) findViewById(R.id.btn_back);
-        btn_home = (ImageView) findViewById(R.id.btn_home);
-
-        btn_start.setOnClickListener(this);
-        btn_pause.setOnClickListener(this);
-        btn_stop.setOnClickListener(this);
-        btn_remake.setOnClickListener(this);
-        btn_after_replay.setOnClickListener(this);
-        btn_after_home.setOnClickListener(this);
-        btn_back.setOnClickListener(this);
-        btn_home.setOnClickListener(this);
-
-        overlay_text = (TextView) findViewById(R.id.overlay_text);
-
         playing = false;
         pausing = false;
-        action_count = 0;
+        actionCount = 0;
+        pose = getIntent().getIntExtra("pose", 1);
+        String[] title = getResources().getStringArray(R.array.pose_title);
 
-        pose = getIntent().getStringExtra("pose");
-        /*
+        svPreview = findViewById(R.id.sv_preview);
+        svPreview.setOnTextureChangedListener(this);
+
+        SeekBar timePicker = findViewById(R.id.time_picker);
+        timePicker.setOnSeekBarChangeListener(this);
+
+        timer = findViewById(R.id.time_count);
+        count = findViewById(R.id.count_count);
+        calories = findViewById(R.id.calories_count);
+
+        beforePlayingControl = findViewById(R.id.before_playing_control);
+        playingControl = findViewById(R.id.playing_control);
+        afterPlayingControl = findViewById(R.id.after_playing_control);
+
+        //所有按钮
+        Button btnStart = findViewById(R.id.start);
+        Button btnPause = findViewById(R.id.pause);
+        Button btnStop = findViewById(R.id.stop);
+        Button btnRemake = findViewById(R.id.remake);
+        Button btnAfterReplay = findViewById(R.id.after_replay);
+        Button btnAfterHome = findViewById(R.id.after_home);
+        View btnBack = findViewById(R.id.btn_back);
+        View btnHome = findViewById(R.id.btn_home);
+
+        btnStart.setOnClickListener(this);
+        btnPause.setOnClickListener(this);
+        btnStop.setOnClickListener(this);
+        btnRemake.setOnClickListener(this);
+        btnAfterReplay.setOnClickListener(this);
+        btnAfterHome.setOnClickListener(this);
+        btnBack.setOnClickListener(this);
+        btnHome.setOnClickListener(this);
+
+        overlayText = findViewById(R.id.overlay_text);
+        timeShow = findViewById(R.id.time_show);
+        TextView poseTitle = findViewById(R.id.title_single);
+        poseTitle.setText(title[pose]);
+
+        //演示视频播放
         String uri = "android.resource://" + getPackageName() + "/";
-        if ("pose_a".equals(pose)) {
+        if (pose == 1) {
             uri += R.raw.pose_a_single;
-        } else if ("pose_b".equals(pose)) {
+        } else if (pose == 2) {
             uri += R.raw.pose_b_single;
-        } else if ("pose_c".equals(pose)) {
+        } else if (pose == 3) {
             uri += R.raw.pose_c_single;
         }
-        sample_video = (VideoView) findViewById(R.id.sample_video);
-        sample_video.setVideoPath(uri);
-        sample_video.setVideoURI(Uri.parse(uri));
-        sample_video.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+        //演示视频
+        VideoView sampleVideo =  findViewById(R.id.sample_video);
+        sampleVideo.setVideoPath(uri);
+        sampleVideo.setVideoURI(Uri.parse(uri));
+        sampleVideo.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
             @Override
             public void onPrepared(MediaPlayer mediaPlayer) {
                 mediaPlayer.setVolume(0f, 0f);
             }
         });
-        sample_video.start();
-        */
+        sampleVideo.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mediaPlayer) {
+                mediaPlayer.seekTo(0);
+            }
+        });
+        sampleVideo.start();
         pageControl(1);
     }
 
@@ -184,6 +181,7 @@ public class SingleActivity extends Activity implements View.OnClickListener, Ca
         } else {
             this.page = page;
         }
+
         if (page == 1) {
             beforePlayingControl.setVisibility(View.VISIBLE);
             playingControl.setVisibility(View.GONE);
@@ -200,19 +198,18 @@ public class SingleActivity extends Activity implements View.OnClickListener, Ca
             afterPlayingControl.setVisibility(View.VISIBLE);
             svPreview.setVisibility(View.GONE);
         }
+
     }
 
-    private void delay(int seconds, Runnable r) {
-        new Handler().postDelayed(r, seconds * 1000);
-    }
-
-    private CountDownTimer getCountDownTimer(long millisInFuture, long countDownInterval) {
-        return new CountDownTimer(millisInFuture, countDownInterval) {
+    private CountDownTimer getCountDownTimer(long millisInFuture) {
+        return new CountDownTimer(millisInFuture, 1000) {
             @Override
             public void onTick(long l) {
                 DecimalFormat decimalFormat = new DecimalFormat("######");
                 timer.setText(decimalFormat.format(Math.floor(l / 1000 + 1)) + "s");
                 millisUntilFinished = l;
+                count.setText(String.valueOf(actionCount));
+                calories.setText(actionCount * caloriesPerAction[pose] + "cal");
             }
 
             @Override
@@ -224,73 +221,81 @@ public class SingleActivity extends Activity implements View.OnClickListener, Ca
 
     private void start() {
         //获得时间，设定chronometer，跳转到页面2
-        EditText tp = (EditText) findViewById(R.id.time_picker);
-        int timeSecond = Integer.parseInt(tp.getText().toString());
-        time = getCountDownTimer(timeSecond * 1000, 1000);
-        overlay_text.setText("准备好了吗？");
+        //变量初始化
+        actionCount = 0;
+        count.setText("0");
+        calories.setText("0cal");
+        time = getCountDownTimer(timeSecond * 1000L);
+        overlayText.setText("准备好了吗？");
         timer.setText(timeSecond + "s");
-        pageControl(2);
+
         new CountDownTimer(3000, 1000) {
             @Override
             public void onTick(long l) {
-                overlay_text.setText(String.valueOf(String.valueOf(l / 1000 + 1).charAt(0)));
+                overlayText.setText(String.valueOf(String.valueOf(l / 1000 + 1).charAt(0)));
             }
 
             @Override
             public void onFinish() {
-                overlay_text.setText("");
+                overlayText.setText("");
                 showToast("训练开始！");
                 time.start();
                 playing = true;
+
             }
         }.start();
+        pageControl(2);
     }
 
     private void stop() {
         //重置chronometer并跳转页面
-        overlay_text.setText("");
-        time.cancel();
-        timer.setText("0s");
-        TextView c = (TextView) findViewById(R.id.total_count_text);
-        c.setText("总计：" + action_count);
-        TextView k = (TextView) findViewById(R.id.total_calories_text);
-        k.setText("卡路里：" + calories_per_action * action_count);
+        TextView c = findViewById(R.id.total_count_text);
+        c.setText("总计：" + actionCount);
+        TextView k = findViewById(R.id.total_calories_text);
+        k.setText("卡路里：" + caloriesPerAction[pose] * actionCount + "cal");
         pageControl(3);
+        clean();
     }
 
     private void pause() {
         //翻转暂停变量，并对chronometer做相应操作
         showToast("暂停训练！");
-        if (!playing) {
-            return;
-        } else {
+        Button btnPause = findViewById(R.id.pause);
+        if (playing) {
             pausing = !pausing;
             if (pausing) {
-                btn_pause.setText("恢复");
-                overlay_text.setText("暂停中……");
+                btnPause.setText("恢复");
+                overlayText.setText("暂停中……");
                 time.cancel();
+                svPreview.releaseCamera();
             } else {
-                btn_pause.setText("暂停");
-                overlay_text.setText("");
-                time = getCountDownTimer(millisUntilFinished, 1000);
+                btnPause.setText("暂停");
+                overlayText.setText("");
+                time = getCountDownTimer(millisUntilFinished);
                 time.start();
-
+                svPreview.openCamera();
             }
         }
     }
 
     private void remake() {
-//重置chronometer并回到主页
-        showToast("重新开始训练！");
-        if (page == 2) {
-            time.cancel();
-            timer.setText("0s");
-            pageControl(1);
-        }
+        //重置chronometer并回到主页
+        Intent intent = getIntent();
+        finish();
+        startActivity(intent);
     }
 
-    private void after_replay() {
-
+    private void clean() {
+        try {
+            timer.setText("0s");
+            actionCount = 0;
+            time.cancel();
+            overlayText.setText("");
+            playing = false;
+            pausing = false;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -306,6 +311,8 @@ public class SingleActivity extends Activity implements View.OnClickListener, Ca
                 stop();
                 break;
             case R.id.remake:
+            case R.id.after_replay:
+                //直接回主页
                 remake();
                 break;
             case R.id.after_home:
@@ -313,12 +320,6 @@ public class SingleActivity extends Activity implements View.OnClickListener, Ca
                 //going home
                 Intent i = new Intent(SingleActivity.this, MainActivity.class);
                 startActivity(i);
-                break;
-            case R.id.after_replay:
-                //直接回主页
-                if (page == 3) {
-                    pageControl(1);
-                }
                 break;
             case R.id.btn_back:
                 finish();
@@ -330,16 +331,30 @@ public class SingleActivity extends Activity implements View.OnClickListener, Ca
     private void showToast(String text) {
         if (myToast == null) {
             myToast = Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT);
-            myToast.show();
         } else {
             myToast.setText(text);
-            myToast.show();
         }
+        myToast.show();
+    }
+
+    @Override
+    public void onProgressChanged(SeekBar seekBar, int progressValue, boolean fromUser) {
+        timeSecond = progressValue;
+        timeShow.setText(timeSecond + "s");
+    }
+
+    @Override
+    public void onStartTrackingTouch(SeekBar seekBar) {
+
+    }
+
+    @Override
+    public void onStopTrackingTouch(SeekBar seekBar) {
+
     }
 
     @Override
     public boolean onTextureChanged(int inTextureId, int outTextureId, int textureWidth, int textureHeight) {
-        String savedImagePath = "";
         synchronized (this) {
             savedImagePath = SingleActivity.this.savedImagePath;
         }
@@ -349,22 +364,11 @@ public class SingleActivity extends Activity implements View.OnClickListener, Ca
                 SingleActivity.this.savedImagePath = "";
             }
         }
-        lastFrameIndex++;
-        if (lastFrameIndex >= 30) {
-            final int fps = (int) (lastFrameIndex * 1e9 / (System.nanoTime() - lastFrameTime));
-            /*runOnUiThread(new Runnable() {
-                public void run() {
-                    tvStatus.setText(Integer.toString(fps) + "fps");
-                }
-            });*/
-            lastFrameIndex = 0;
-            lastFrameTime = System.nanoTime();
-        }
+        actionCount = predictor.getActionCount(inTextureId, outTextureId, textureWidth, textureHeight, savedImagePath, pose, true)[0];
         return modified;
     }
 
     public void checkAndUpdateSettings() {
-
         if (SettingsActivity.checkAndUpdateSettings(this)) {
             String realModelDir = getCacheDir() + "/" + SettingsActivity.modelDir;
             Utils.copyDirectoryFromAssets(this, SettingsActivity.modelDir, realModelDir);
