@@ -28,4 +28,12 @@
         <item>LITE_POWER_RAND_HIGH</item>
         <item>LITE_POWER_RAND_LOW</item>
     </string-array>
+
+    <string-array name="pose_title">
+        <item>null</item>
+        <item>肩上举</item>
+        <item>侧平举</item>
+        <item>深蹲</item>
+    </string-array>
+
 </resources>
