@@ -40,6 +40,7 @@ void clear_action_count() {
   action_recs[1].action_count = 0;
   return;
 }
+float thres_conf = 0.2;
 
 int get_action_count(int recid) {
   return action_recs[recid].action_count;
@@ -64,11 +65,15 @@ int check_lateral_raise(std::vector<float> &kpts_sframe, int recid) {
     return action_recs[recid].action_count;
   }
   float xy_ratio;
-  if (kpts_sframe[kpts[0]*3] + kpts_sframe[kpts[1]*3] >= kpts_sframe[kpts[2]*3] + kpts_sframe[kpts[3]*3]) {
+  LOGD("poseaction: check_lateral_raise, kpts conf: %f %f ; %f %f", kpts_sframe[kpts[0]*3], kpts_sframe[kpts[1]*3], kpts_sframe[kpts[2]*3], kpts_sframe[kpts[3]*3]);
+  if (kpts_sframe[kpts[0]*3] > thres_conf && kpts_sframe[kpts[1]*3] > thres_conf) {
     xy_ratio = get_xyratio(kpts_sframe, kpts[0], kpts[1]);
   }
-  else {
+  else if (kpts_sframe[kpts[2]*3] > thres_conf && kpts_sframe[kpts[3]*3] > thres_conf) {
     xy_ratio = get_xyratio(kpts_sframe, kpts[2], kpts[3]);
+  }
+  else {
+    return action_recs[recid].action_count;
   }
   if (xy_ratio < down_thres && action_recs[recid].mark) {
     action_recs[recid].latency += 1;
@@ -94,12 +99,17 @@ int check_stand_press(std::vector<float> &kpts_sframe, int recid) {
     return action_recs[recid].action_count;
   }
   bool xy_ratio;
-  if (kpts_sframe[kpts[0]*3] + kpts_sframe[kpts[1]*3] >= kpts_sframe[kpts[2]*3] + kpts_sframe[kpts[3]*3]) {
+  LOGD("poseaction: check_stand_press, kpts conf: %f %f ; %f %f", kpts_sframe[kpts[0]*3], kpts_sframe[kpts[1]*3], kpts_sframe[kpts[2]*3], kpts_sframe[kpts[3]*3]);
+  if (kpts_sframe[kpts[0]*3] > thres_conf && kpts_sframe[kpts[1]*3] > thres_conf) {
     xy_ratio = get_xyhigher(kpts_sframe, kpts[0], kpts[1]);
   }
-  else {
+  else if(kpts_sframe[kpts[2]*3] > thres_conf && kpts_sframe[kpts[3]*3] > thres_conf) {
     xy_ratio = get_xyhigher(kpts_sframe, kpts[2], kpts[3]);
   }
+  else {
+    return action_recs[recid].action_count;
+  }
+
   if (xy_ratio && action_recs[recid].mark) {
     action_recs[recid].latency += 1;
     if (action_recs[recid].latency == 4) {
@@ -125,12 +135,16 @@ int check_deep_down(std::vector<float> &kpts_sframe, int recid) {
     return action_recs[recid].action_count;
   }
   bool xy_ratio;
-  if (kpts_sframe[kpts[0]*3] + kpts_sframe[kpts[1]*3] >= kpts_sframe[kpts[2]*3] + kpts_sframe[kpts[3]*3]) {
+  if (kpts_sframe[kpts[0]*3] > thres_conf && kpts_sframe[kpts[1]*3] > thres_conf) {
     xy_ratio = get_xyhigher(kpts_sframe, kpts[0], kpts[1]);
   }
-  else {
+  else if(kpts_sframe[kpts[2]*3] > thres_conf && kpts_sframe[kpts[3]*3] > thres_conf) {
     xy_ratio = get_xyhigher(kpts_sframe, kpts[2], kpts[3]);
   }
+  else {
+    return action_recs[recid].action_count;
+  }
+
   if (xy_ratio && action_recs[recid].mark) {
     action_recs[recid].latency += 1;
     if (action_recs[recid].latency == 4) {
@@ -158,14 +172,19 @@ int check_deep_down2(std::vector<float> &kpts_sframe, float h, int recid) {
   float down_thres=0.12;
   float up_thres=0.16;
   float xy_ratio;
-  if (kpts_sframe[kpts[0]*3] + kpts_sframe[kpts[1]*3] >= kpts_sframe[kpts[2]*3] + kpts_sframe[kpts[3]*3]) {
+  LOGD("poseaction: check_deep_down2, kpts conf: %f %f ; %f %f", kpts_sframe[kpts[0]*3], kpts_sframe[kpts[1]*3], kpts_sframe[kpts[2]*3], kpts_sframe[kpts[3]*3]);
+  if (kpts_sframe[kpts[0]*3] > thres_conf && kpts_sframe[kpts[1]*3] > thres_conf) {
     int ydiff = std::max(-kpts_sframe[kpts[0]*3 + 2] + kpts_sframe[kpts[1]*3 + 2], 0.f);
     xy_ratio = ydiff / h;
   }
-  else {
+  else if(kpts_sframe[kpts[2]*3] > thres_conf && kpts_sframe[kpts[3]*3] > thres_conf) {
     int ydiff = std::max(-kpts_sframe[kpts[2]*3 + 2] + kpts_sframe[kpts[3]*3 + 2], 0.f);
     xy_ratio = ydiff / h;
   }
+  else {
+    return action_recs[recid].action_count;
+  }
+
   if (xy_ratio<down_thres && action_recs[recid].mark) {
     action_recs[recid].latency += 1;
     if (action_recs[recid].latency == 4) {
