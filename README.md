@@ -1,9 +1,10 @@
 # pose_demo_android
 pose demo on android mobile based on PaddleDetection
 
-本工程Android部分基于[Paddle-Lite-Demo](https://github.com/zhiboniu/Paddle-Lite-Demo)修改。
+本工程Android部分基于[Paddle-Lite-Demo](https://github.com/PaddlePaddle/Paddle-Lite-Demo)修改。
 算法模型基于[PaddldDetection](https://github.com/PaddlePaddle/PaddleDetection).
 如欲获取更多详情，请点击链接至相应repo中查看。
+
 
 
 ## APP安装体验
@@ -12,7 +13,9 @@ pose demo on android mobile based on PaddleDetection
 [image]（待定）
 
 
-##**上面部分为本工程使用介绍**
+
+
+## 下面部分为本工程使用介绍
 
 ## 要求
 
@@ -23,7 +26,7 @@ pose demo on android mobile based on PaddleDetection
 
 
 ## 安装
-$ git clone https://github.com/PaddlePaddle/Paddle-Lite-Demo
+$ git clone https://github.com/zhiboniu/pose_demo_android
 
 * Android
     * 打开Android Studio，在"Welcome to Android Studio"窗口点击"Open an existing Android Studio project"，在弹出的路径选择窗口中进入"image_classification_demo"目录，然后点击右下角的"Open"按钮即可导入工程
@@ -41,7 +44,7 @@ $ git clone https://github.com/PaddlePaddle/Paddle-Lite-Demo
 * 替换arm64-v8a jni库文件：将生成build.lite.android.armv8.gcc/inference_lite_lib.android.armv8/java/so/libpaddle_lite_jni.so库替换demo中的Paddle-Lite-Demo/PaddleLite-android-demo/image_classification_demo/app/src/main/jniLibs/arm64-v8a/libpaddle_lite_jni.so
 * 替换armeabi-v7a jni库文件：将生成的build.lite.android.armv7.gcc/inference_lite_lib.android.armv7/java/so/libpaddle_lite_jni.so库替换demo中的Paddle-Lite-Demo/PaddleLite-android-demo/image_classification_demo/app/src/main/jniLibs/armeabi-v7a/libpaddle_lite_jni.so.
 
-## 代码结构
+## 代码结构介绍
 
 ```
 src/
@@ -75,7 +78,5 @@ src/
         `-- labels
             `-- coco_labels_2014_2017.txt           coco labels文件，实际只用了第一类person
 ```
-
-
 
 
