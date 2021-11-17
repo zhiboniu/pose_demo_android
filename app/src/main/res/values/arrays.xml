@@ -29,11 +29,23 @@
         <item>LITE_POWER_RAND_LOW</item>
     </string-array>
 
-    <string-array name="pose_title">
-        <item>null</item>
+    <string-array name="pose_name">
+        <item>测试</item>
         <item>肩上举</item>
         <item>侧平举</item>
         <item>深蹲</item>
     </string-array>
+    <string-array name="pose_image">
+        <item>null</item>
+        <item>pose_a</item>
+        <item>pose_b</item>
+        <item>pose_c</item>
+    </string-array>
+    <integer-array name="pose_action_id">
+        <item>0</item>
+        <item>2</item>
+        <item>1</item>
+        <item>3</item>
+    </integer-array>
 
 </resources>

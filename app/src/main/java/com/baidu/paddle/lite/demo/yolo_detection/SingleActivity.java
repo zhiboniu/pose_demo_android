@@ -98,7 +98,7 @@ public class SingleActivity extends Activity implements View.OnClickListener, Ca
         pausing = false;
         actionCount = 0;
         pose = getIntent().getIntExtra("pose", 1);
-        String[] title = getResources().getStringArray(R.array.pose_title);
+        String[] title = getResources().getStringArray(R.array.pose_name);
 
         svPreview = findViewById(R.id.sv_preview);
         svPreview.setOnTextureChangedListener(this);
