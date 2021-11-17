@@ -42,13 +42,11 @@ public class Native {
         if (ctx == 0) {
             return false;
         }
-        int[] records=nativeProcess(ctx, inTextureId, outTextureId, textureWidth, textureHeight, savedImagePath,1,true);
-        return true;
+        return nativeProcess(ctx, inTextureId, outTextureId, textureWidth, textureHeight, savedImagePath);
     }
 
-    public int[] getActionCount(int inTextureId, int outTextureId, int textureWidth, int textureHeight, String savedImagePath, int actionid, boolean single) {
-        return nativeProcess(ctx, inTextureId, outTextureId, textureWidth, textureHeight, savedImagePath, actionid, single);
-
+    public int[] getActionCount( int actionid, boolean single) {
+        return nativeGetActionCount(ctx, actionid, single);
     }
 
     public boolean reset() {
@@ -67,7 +65,9 @@ public class Native {
 
     public static native boolean nativeRelease(long ctx);
 
-    public static native int[] nativeProcess(long ctx, int inTextureId, int outTextureId, int textureWidth, int textureHeight, String savedImagePath, int actionid, boolean single);
+    public static native boolean nativeProcess(long ctx, int inTextureId, int outTextureId, int textureWidth, int textureHeight, String savedImagePath);
 
     public static native boolean nativeReset(long ctx);
+
+    public static native int[] nativeGetActionCount(long ctx,int action_id,boolean single);
 }

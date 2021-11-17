@@ -380,7 +380,7 @@ public class SingleActivity extends Activity implements View.OnClickListener, Ca
                 SingleActivity.this.savedImagePath = "";
             }
         }
-        actionCount = predictor.getActionCount(inTextureId, outTextureId, textureWidth, textureHeight, savedImagePath, action_id[pose], true)[0];
+        actionCount = predictor.getActionCount(action_id[pose], true)[0];
         return modified;
     }
 
