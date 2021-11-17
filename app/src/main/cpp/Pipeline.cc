@@ -188,7 +188,7 @@ void Pipeline::Action_Process(cv::Mat *rgbaImage,
 
 static std::vector<RESULT> results;
 static int idx = 0;
-std::vector<int> Pipeline::Process(int inTexureId, int outTextureId, int textureWidth,
+bool Pipeline::Process(int inTexureId, int outTextureId, int textureWidth,
                        int textureHeight, std::string savedImagePath, int actionid, bool single) {
   static double readGLFBOTime = 0, writeGLTextureTime = 0;
   double preprocessTime = 0, predictTime = 0, postprocessTime = 0;
@@ -233,9 +233,13 @@ std::vector<int> Pipeline::Process(int inTexureId, int outTextureId, int texture
 
   // Write back to texture2D
   WriteRGBAImageBackToGLTexture(rgbaImage, outTextureId, &writeGLTextureTime);
-  return std::vector<int> {get_action_count(0), get_action_count(1)};
+  return true;
 }
 
 void Pipeline::ClearCount() {
   clear_action_count();
+}
+
+std::vector<int> Pipeline::GetCount() {
+  return std::vector<int> {get_action_count(0), get_action_count(1)};
 }

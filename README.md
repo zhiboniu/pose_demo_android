@@ -45,16 +45,21 @@ $ git clone https://github.com/zhiboniu/pose_demo_android
 * 替换armeabi-v7a jni库文件：将生成的build.lite.android.armv7.gcc/inference_lite_lib.android.armv7/java/so/libpaddle_lite_jni.so库替换demo中的Paddle-Lite-Demo/PaddleLite-android-demo/image_classification_demo/app/src/main/jniLibs/armeabi-v7a/libpaddle_lite_jni.so.
 
 ## 代码结构介绍
+主要源码位于工程pose_demo_android/app/src/main目录下，由三大部分组成java、cpp、assets。
+* java: Andoird前端界面相关代码部分
+* cpp: 算法实现相关代码
+* assets: 模型存放位置
 
+pose_demo_android/app/src目录结构如下：
 ```
 src/
 |-- main
-    |-- java                                     Java源码（Andoird前端部分）
+    |-- java                                        Java源码（Andoird前端部分）
     |   `-- com.baidu.paddle.lite.demo
     |       |-- common
     |       `-- yolo_detection
-    |-- cpp                                        C++ 源码（底层算法部分）
-    |   |-- CMakeLists.txt                         编译文件
+    |-- cpp                                         C++ 源码（底层算法部分）
+    |   |-- CMakeLists.txt                          编译文件
     |   |-- Native.h                                Jni高级类型数据格式转换辅助函数
     |   |-- Native.cc                               Cpp与Java交互Jni接口
     |   |-- Pipeline.h
