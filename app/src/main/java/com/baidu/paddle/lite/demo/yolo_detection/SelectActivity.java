@@ -45,7 +45,7 @@ public class SelectActivity extends Activity implements View.OnClickListener {
             PoseButton newPose = new PoseButton(getApplicationContext());
             int finalI = i;
             newPose.setPoseName(pose_name[finalI]);
-            int poseImageId=getResources().getIdentifier(pose_image[finalI],"drawable",getPackageName());
+            int poseImageId = getResources().getIdentifier(pose_image[finalI], "drawable", getPackageName());
             newPose.setPoseImage(poseImageId);
             newPose.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -57,6 +57,7 @@ public class SelectActivity extends Activity implements View.OnClickListener {
                         myIntent = new Intent(SelectActivity.this, VSActivity.class);
                     }
                     myIntent.putExtra("pose", pose_action_id[finalI]);
+                    myIntent.putExtra("i",finalI);
                     startActivity(myIntent);
                 }
             });
@@ -79,13 +80,5 @@ public class SelectActivity extends Activity implements View.OnClickListener {
                 return;
             default:
         }
-        Intent i = new Intent();
-        if ("single".equals(mode)) {
-            i = new Intent(SelectActivity.this, SingleActivity.class);
-        } else if ("vs".equals(mode)) {
-            i = new Intent(SelectActivity.this, VSActivity.class);
-        }
-        i.putExtra("pose", pose);
-        startActivity(i);
     }
 }

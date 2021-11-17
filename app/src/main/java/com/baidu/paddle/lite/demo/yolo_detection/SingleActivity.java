@@ -50,6 +50,7 @@ public class SingleActivity extends Activity implements View.OnClickListener, Ca
     //动作计数
     private int actionCount;
     private ArrayList<Double> caloriesPerAction;
+    private int[] action_id;
     //动作代码
     private int pose;
 
@@ -98,8 +99,9 @@ public class SingleActivity extends Activity implements View.OnClickListener, Ca
         playing = false;
         pausing = false;
         actionCount = 0;
-        pose = getIntent().getIntExtra("pose", 1);
-        caloriesPerAction=new ArrayList<>();
+        pose = getIntent().getIntExtra("i", 1);
+        caloriesPerAction = new ArrayList<>();
+        action_id = getResources().getIntArray(R.array.pose_action_id);
         for (String s : getResources().getStringArray(R.array.calories)
         ) {
             caloriesPerAction.add(Double.valueOf(s));
@@ -146,9 +148,9 @@ public class SingleActivity extends Activity implements View.OnClickListener, Ca
 
         //演示视频播放
         String uri = "android.resource://" + getPackageName() + "/";
-        if (pose == 2) {
+        if (pose == 1) {
             uri += R.raw.pose_a_single;
-        } else if (pose == 1) {
+        } else if (pose == 2) {
             uri += R.raw.pose_b_single;
         } else if (pose == 3) {
             uri += R.raw.pose_c_single;
@@ -211,11 +213,13 @@ public class SingleActivity extends Activity implements View.OnClickListener, Ca
         return new CountDownTimer(millisInFuture, 1000) {
             @Override
             public void onTick(long l) {
-                DecimalFormat decimalFormat = new DecimalFormat("######");
-                timer.setText(decimalFormat.format(Math.floor(l / 1000 + 1)) + "s");
+                DecimalFormat td = new DecimalFormat("######");
+                timer.setText(td.format(Math.floor(l / 1000 + 1)) + "s");
                 millisUntilFinished = l;
                 count.setText(String.valueOf(actionCount));
-                calories.setText(actionCount * caloriesPerAction.get(pose) + "cal");
+                double caloriesValue = actionCount * caloriesPerAction.get(pose);
+                DecimalFormat cd = new DecimalFormat("######.#");
+                calories.setText(cd.format(caloriesValue) + "cal");
             }
 
             @Override
@@ -238,7 +242,7 @@ public class SingleActivity extends Activity implements View.OnClickListener, Ca
         new CountDownTimer(4000, 1000) {
             @Override
             public void onTick(long l) {
-                if (l<1000) {
+                if (l < 1000) {
                     overlayText.setText("训练开始！");
                 } else {
                     overlayText.setText(String.valueOf(String.valueOf(l / 1000).charAt(0)));
@@ -262,7 +266,9 @@ public class SingleActivity extends Activity implements View.OnClickListener, Ca
         TextView c = findViewById(R.id.total_count_text);
         c.setText("总计：" + actionCount);
         TextView k = findViewById(R.id.total_calories_text);
-        k.setText("卡路里：" + caloriesPerAction.get(pose) * actionCount + "cal");
+        double caloriesValue = actionCount * caloriesPerAction.get(pose);
+        DecimalFormat cd = new DecimalFormat("######.#");
+        k.setText("卡路里：" + cd.format(caloriesValue) + "cal");
         pageControl(3);
         clean();
     }
@@ -368,15 +374,13 @@ public class SingleActivity extends Activity implements View.OnClickListener, Ca
         synchronized (this) {
             savedImagePath = SingleActivity.this.savedImagePath;
         }
-        int[] processResult = predictor.process(inTextureId, outTextureId, textureWidth, textureHeight, savedImagePath, 1, true);
-        boolean modified = (processResult == null);
+        boolean modified = predictor.process(inTextureId, outTextureId, textureWidth, textureHeight, savedImagePath);
         if (!savedImagePath.isEmpty()) {
             synchronized (this) {
                 SingleActivity.this.savedImagePath = "";
             }
         }
-
-        actionCount = modified ? 0 : processResult[0];
+        actionCount = predictor.getActionCount(inTextureId, outTextureId, textureWidth, textureHeight, savedImagePath, action_id[pose], true)[0];
         return modified;
     }
 

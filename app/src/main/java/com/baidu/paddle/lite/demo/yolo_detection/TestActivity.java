@@ -7,23 +7,27 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.*;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.*;
 import android.widget.*;
 
 import com.baidu.paddle.lite.demo.common.CameraSurfaceView;
 import com.baidu.paddle.lite.demo.common.Utils;
+import com.baidu.paddle.lite.demo.yolo_detection.R;
 
 import java.io.File;
+import java.nio.file.attribute.FileTime;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class TestActivity extends Activity implements View.OnClickListener, CameraSurfaceView.OnTextureChangedListener {
-    private static final String TAG = TestActivity.class.getSimpleName();
+    private static final String TAG = MainActivity.class.getSimpleName();
 
     CameraSurfaceView svPreview;
     TextView tvStatus;
@@ -84,7 +88,7 @@ public class TestActivity extends Activity implements View.OnClickListener, Came
         synchronized (this) {
             savedImagePath = TestActivity.this.savedImagePath;
         }
-        boolean modified = (predictor.process(inTextureId, outTextureId, textureWidth, textureHeight, savedImagePath,1,true)==null);
+        boolean modified = predictor.process(inTextureId, outTextureId, textureWidth, textureHeight, savedImagePath);
         if (!savedImagePath.isEmpty()) {
             synchronized (this) {
                 TestActivity.this.savedImagePath = "";
