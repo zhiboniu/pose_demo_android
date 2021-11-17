@@ -49,9 +49,9 @@
     </integer-array>
     <string-array name="calories">
         <item>0</item>
-        <item>50</item>
-        <item>100</item>
-        <item>150</item>
+        <item>1.10</item>
+        <item>0.65</item>
+        <item>0.75</item>
     </string-array>
 
 </resources>
