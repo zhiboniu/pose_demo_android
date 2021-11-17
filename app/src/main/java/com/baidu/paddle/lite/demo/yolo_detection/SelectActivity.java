@@ -45,7 +45,8 @@ public class SelectActivity extends Activity implements View.OnClickListener {
             PoseButton newPose = new PoseButton(getApplicationContext());
             int finalI = i;
             newPose.setPoseName(pose_name[finalI]);
-            newPose.setPoseImage(getResources().getIdentifier(pose_name[finalI], "drawable", getApplicationContext().getPackageName()));
+            int poseImageId=getResources().getIdentifier(pose_image[finalI],"drawable",getPackageName());
+            newPose.setPoseImage(poseImageId);
             newPose.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -62,14 +63,8 @@ public class SelectActivity extends Activity implements View.OnClickListener {
             poseSelect.addView(newPose);
 
         }
-        View pose_a_btn = findViewById(R.id.pose_a);
-        View pose_b_btn = findViewById(R.id.pose_b);
-        View pose_c_btn = findViewById(R.id.pose_c);
         View btn_back = findViewById(R.id.btn_back);
 
-        pose_a_btn.setOnClickListener(this);
-        pose_b_btn.setOnClickListener(this);
-        pose_c_btn.setOnClickListener(this);
         btn_back.setOnClickListener(this);
 
 
@@ -82,15 +77,6 @@ public class SelectActivity extends Activity implements View.OnClickListener {
             case R.id.btn_back:
                 finish();
                 return;
-            case R.id.pose_a:
-                pose = 2;
-                break;
-            case R.id.pose_b:
-                pose = 1;
-                break;
-            case R.id.pose_c:
-                pose = 3;
-                break;
             default:
         }
         Intent i = new Intent();

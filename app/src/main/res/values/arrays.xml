@@ -47,5 +47,11 @@
         <item>1</item>
         <item>3</item>
     </integer-array>
+    <string-array name="calories">
+        <item>0</item>
+        <item>50</item>
+        <item>100</item>
+        <item>150</item>
+    </string-array>
 
 </resources>

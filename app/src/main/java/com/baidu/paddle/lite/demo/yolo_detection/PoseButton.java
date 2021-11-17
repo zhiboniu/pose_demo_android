@@ -46,7 +46,7 @@ public class PoseButton extends ConstraintLayout {
     }
 
     public void setPoseImage(int pbImageId) {
-        pbImageView.setBackgroundResource(pbImageId);
+        pbImageView.setImageResource(pbImageId);
     }
     public void setPoseName(String pbName) {
         pbNameView.setText(pbName);

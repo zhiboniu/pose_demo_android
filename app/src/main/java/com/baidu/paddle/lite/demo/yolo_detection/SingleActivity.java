@@ -22,6 +22,7 @@ import com.baidu.paddle.lite.demo.common.CameraSurfaceView;
 import com.baidu.paddle.lite.demo.common.Utils;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 
 
 public class SingleActivity extends Activity implements View.OnClickListener, CameraSurfaceView.OnTextureChangedListener, SeekBar.OnSeekBarChangeListener {
@@ -48,7 +49,7 @@ public class SingleActivity extends Activity implements View.OnClickListener, Ca
     private long millisUntilFinished;
     //动作计数
     private int actionCount;
-    private final double[] caloriesPerAction = {0, 100, 100, 100};//todo 改成卡路里数值
+    private ArrayList<Double> caloriesPerAction;
     //动作代码
     private int pose;
 
@@ -98,6 +99,11 @@ public class SingleActivity extends Activity implements View.OnClickListener, Ca
         pausing = false;
         actionCount = 0;
         pose = getIntent().getIntExtra("pose", 1);
+        caloriesPerAction=new ArrayList<>();
+        for (String s : getResources().getStringArray(R.array.calories)
+        ) {
+            caloriesPerAction.add(Double.valueOf(s));
+        }
         String[] title = getResources().getStringArray(R.array.pose_name);
 
         svPreview = findViewById(R.id.sv_preview);
@@ -209,7 +215,7 @@ public class SingleActivity extends Activity implements View.OnClickListener, Ca
                 timer.setText(decimalFormat.format(Math.floor(l / 1000 + 1)) + "s");
                 millisUntilFinished = l;
                 count.setText(String.valueOf(actionCount));
-                calories.setText(actionCount * caloriesPerAction[pose] + "cal");
+                calories.setText(actionCount * caloriesPerAction.get(pose) + "cal");
             }
 
             @Override
@@ -229,16 +235,19 @@ public class SingleActivity extends Activity implements View.OnClickListener, Ca
         overlayText.setText("准备好了吗？");
         timer.setText(timeSecond + "s");
 
-        new CountDownTimer(3000, 1000) {
+        new CountDownTimer(4000, 1000) {
             @Override
             public void onTick(long l) {
-                overlayText.setText(String.valueOf(String.valueOf(l / 1000 + 1).charAt(0)));
+                if (l<1000) {
+                    overlayText.setText("训练开始！");
+                } else {
+                    overlayText.setText(String.valueOf(String.valueOf(l / 1000).charAt(0)));
+                }
             }
 
             @Override
             public void onFinish() {
                 overlayText.setText("");
-                showToast("训练开始！");
                 predictor.reset();
                 time.start();
                 playing = true;
@@ -253,7 +262,7 @@ public class SingleActivity extends Activity implements View.OnClickListener, Ca
         TextView c = findViewById(R.id.total_count_text);
         c.setText("总计：" + actionCount);
         TextView k = findViewById(R.id.total_calories_text);
-        k.setText("卡路里：" + caloriesPerAction[pose] * actionCount + "cal");
+        k.setText("卡路里：" + caloriesPerAction.get(pose) * actionCount + "cal");
         pageControl(3);
         clean();
     }
