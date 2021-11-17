@@ -52,24 +52,29 @@
                 android:layout_height="match_parent"
                 android:orientation="horizontal">
 
-            <LinearLayout
-                    android:layout_width="wrap_content"
+            <RelativeLayout
+                    android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:orientation="horizontal">
+                    android:padding="5dp"
+                  >
 
                 <ImageView
                         android:layout_width="50dp"
                         android:layout_height="50dp"
                         android:layout_gravity="center_vertical"
-                        android:layout_marginLeft="10dp"
+                        android:layout_alignParentLeft="true"
+                        android:layout_centerVertical="true"
                         android:src="@drawable/time"/>
 
                 <LinearLayout
-                        android:layout_width="match_parent"
+                        android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:layout_marginLeft="3dp"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
                         android:orientation="vertical">
+
 
                     <TextView
                             android:layout_width="wrap_content"
@@ -78,8 +83,6 @@
                             android:textColor="#ffffff"
                             android:textSize="20sp"
                             android:textStyle="bold"/>
-
-
                     <TextView
                             android:id="@+id/time_count"
                             android:layout_width="wrap_content"
@@ -91,26 +94,29 @@
                             android:textStyle="bold"
                             android:countDown="true"/>
                 </LinearLayout>
-            </LinearLayout>
+            </RelativeLayout>
 
 
-            <LinearLayout
-                    android:layout_width="wrap_content"
+            <RelativeLayout
+                    android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:orientation="horizontal">
-
+                    android:padding="5dp"
+            >
                 <ImageView
                         android:layout_width="50dp"
                         android:layout_height="50dp"
                         android:layout_gravity="center_vertical"
-                        android:layout_marginLeft="10dp"
-                        android:src="@drawable/count"></ImageView>
 
+                        android:layout_alignParentLeft="true"
+                        android:layout_centerVertical="true"
+                        android:src="@drawable/count" android:layout_marginLeft="0dp"></ImageView>
                 <LinearLayout
-                        android:layout_width="match_parent"
+                        android:layout_width="wrap_content"
                         android:layout_height="match_parent"
-                        android:layout_marginLeft="3dp"
+                        android:layout_marginLeft="1dp"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
                         android:orientation="vertical">
 
                     <TextView
@@ -119,7 +125,7 @@
                             android:text="Count"
                             android:textColor="#ffffff"
                             android:textSize="20sp"
-                            android:textStyle="bold"></TextView>
+                            android:textStyle="bold"/>
 
                     <TextView
                             android:id="@+id/count_count"
@@ -129,28 +135,32 @@
                             android:text="0"
                             android:textColor="#ffffff"
                             android:textSize="20sp"
-                            android:textStyle="bold"></TextView>
+                            android:textStyle="bold"/>
                 </LinearLayout>
-            </LinearLayout>
+            </RelativeLayout>
 
 
-            <LinearLayout
-                    android:layout_width="wrap_content"
+            <RelativeLayout
+                    android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:orientation="horizontal">
-
+                    android:padding="5dp"
+            >
                 <ImageView
                         android:layout_width="50dp"
                         android:layout_height="50dp"
                         android:layout_gravity="center_vertical"
-                        android:layout_marginLeft="10dp"
-                        android:src="@drawable/calories"></ImageView>
+
+                        android:layout_alignParentLeft="true"
+                        android:layout_centerVertical="true"
+                        android:src="@drawable/calories"/>
 
                 <LinearLayout
-                        android:layout_width="match_parent"
+                        android:layout_width="wrap_content"
                         android:layout_height="match_parent"
-                        android:layout_marginLeft="3dp"
+                        android:layout_marginLeft="1dp"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
                         android:orientation="vertical">
 
                     <TextView
@@ -159,7 +169,7 @@
                             android:text="Calories"
                             android:textColor="#ffffff"
                             android:textSize="20sp"
-                            android:textStyle="bold"></TextView>
+                            android:textStyle="bold"/>
 
                     <TextView
                             android:id="@+id/calories_count"
@@ -169,9 +179,9 @@
                             android:text="0"
                             android:textColor="#ffffff"
                             android:textSize="20sp"
-                            android:textStyle="bold"></TextView>
+                            android:textStyle="bold"/>
                 </LinearLayout>
-            </LinearLayout>
+            </RelativeLayout>
         </LinearLayout>
     </FrameLayout>
 
@@ -202,8 +212,9 @@
             <TextView android:layout_width="wrap_content"
                       android:layout_height="wrap_content"
                       android:id="@+id/overlay_text"
-                      android:textSize="30dp"
+                      android:textSize="70dp"
                       android:textColor="#FFFFFF"
+                      android:textStyle="bold"
                       android:layout_centerInParent="true"
                       android:visibility="visible"/>
             <LinearLayout
@@ -217,7 +228,6 @@
                         android:layout_width="300dp"
                         android:layout_height="400dp"
                         android:id="@+id/sample_video"
-
                 />
                 <TextView
                         android:layout_height="wrap_content"
@@ -258,40 +268,44 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentBottom="true"
                     android:gravity="center"
-                    android:visibility="visible">
+                    android:visibility="visible"
+                    android:layout_marginBottom="25dp">
 
                 <Button
                         android:id="@+id/pause"
-                        android:layout_width="130dp"
+                        android:layout_width="100dp"
                         android:layout_height="50dp"
                         android:layout_marginHorizontal="5dp"
                         android:background="@drawable/mybutton"
                         android:text="暂停"
                         android:textColor="#ffffff"
                         android:textSize="20sp"
-                        android:textStyle="bold"/>
+                        android:textStyle="bold"
+                android:layout_margin="10dp"/>
 
                 <Button
                         android:id="@+id/stop"
-                        android:layout_width="130dp"
+                        android:layout_width="100dp"
                         android:layout_height="50dp"
                         android:layout_marginHorizontal="5dp"
                         android:background="@drawable/mybutton"
                         android:text="停止"
                         android:textColor="#ffffff"
                         android:textSize="20sp"
-                        android:textStyle="bold"/>
+                        android:textStyle="bold"
+                        android:layout_margin="10dp"/>
 
                 <Button
                         android:id="@+id/remake"
-                        android:layout_width="130dp"
+                        android:layout_width="100dp"
                         android:layout_height="50dp"
                         android:layout_marginHorizontal="5dp"
                         android:background="@drawable/mybutton"
                         android:text="重来"
                         android:textColor="#ffffff"
                         android:textSize="20sp"
-                        android:textStyle="bold"/>
+                        android:textStyle="bold"
+                        android:layout_margin="10dp"/>
             </LinearLayout>
 
             <LinearLayout

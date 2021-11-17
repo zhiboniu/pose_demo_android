@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">YOLO Detection</string>
+    <string name="app_name">PP-TinyPose</string>
     <string name="CHOOSE_PRE_INSTALLED_MODEL_KEY">CHOOSE_INSTALLED_MODEL_KEY</string>
     <string name="MODEL_DIR_KEY">MODEL_DIR_KEY</string>
     <string name="LABEL_PATH_KEY">LABEL_PATH_KEY</string>

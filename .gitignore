@@ -128,4 +128,4 @@ app/PaddleLite/
 app/cache/
 app/.cxx
 
-app/src/main/models/
+app/src/main/assets/

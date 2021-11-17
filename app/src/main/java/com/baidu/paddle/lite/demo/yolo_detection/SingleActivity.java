@@ -22,6 +22,7 @@ import com.baidu.paddle.lite.demo.common.CameraSurfaceView;
 import com.baidu.paddle.lite.demo.common.Utils;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 
 
 public class SingleActivity extends Activity implements View.OnClickListener, CameraSurfaceView.OnTextureChangedListener, SeekBar.OnSeekBarChangeListener {
@@ -48,7 +49,8 @@ public class SingleActivity extends Activity implements View.OnClickListener, Ca
     private long millisUntilFinished;
     //动作计数
     private int actionCount;
-    private final double[] caloriesPerAction = {0, 100, 100, 100};//todo 改成卡路里数值
+    private ArrayList<Double> caloriesPerAction;
+    private int[] action_id;
     //动作代码
     private int pose;
 
@@ -97,8 +99,14 @@ public class SingleActivity extends Activity implements View.OnClickListener, Ca
         playing = false;
         pausing = false;
         actionCount = 0;
-        pose = getIntent().getIntExtra("pose", 1);
-        String[] title = getResources().getStringArray(R.array.pose_title);
+        pose = getIntent().getIntExtra("i", 1);
+        caloriesPerAction = new ArrayList<>();
+        action_id = getResources().getIntArray(R.array.pose_action_id);
+        for (String s : getResources().getStringArray(R.array.calories)
+        ) {
+            caloriesPerAction.add(Double.valueOf(s));
+        }
+        String[] title = getResources().getStringArray(R.array.pose_name);
 
         svPreview = findViewById(R.id.sv_preview);
         svPreview.setOnTextureChangedListener(this);
@@ -148,7 +156,7 @@ public class SingleActivity extends Activity implements View.OnClickListener, Ca
             uri += R.raw.pose_c_single;
         }
         //演示视频
-        VideoView sampleVideo =  findViewById(R.id.sample_video);
+        VideoView sampleVideo = findViewById(R.id.sample_video);
         sampleVideo.setVideoPath(uri);
         sampleVideo.setVideoURI(Uri.parse(uri));
         sampleVideo.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
@@ -205,11 +213,13 @@ public class SingleActivity extends Activity implements View.OnClickListener, Ca
         return new CountDownTimer(millisInFuture, 1000) {
             @Override
             public void onTick(long l) {
-                DecimalFormat decimalFormat = new DecimalFormat("######");
-                timer.setText(decimalFormat.format(Math.floor(l / 1000 + 1)) + "s");
+                DecimalFormat td = new DecimalFormat("######");
+                timer.setText(td.format(Math.floor(l / 1000 + 1)) + "s");
                 millisUntilFinished = l;
                 count.setText(String.valueOf(actionCount));
-                calories.setText(actionCount * caloriesPerAction[pose] + "cal");
+                double caloriesValue = actionCount * caloriesPerAction.get(pose);
+                DecimalFormat cd = new DecimalFormat("######.#");
+                calories.setText(cd.format(caloriesValue) + "cal");
             }
 
             @Override
@@ -229,16 +239,20 @@ public class SingleActivity extends Activity implements View.OnClickListener, Ca
         overlayText.setText("准备好了吗？");
         timer.setText(timeSecond + "s");
 
-        new CountDownTimer(3000, 1000) {
+        new CountDownTimer(4000, 1000) {
             @Override
             public void onTick(long l) {
-                overlayText.setText(String.valueOf(String.valueOf(l / 1000 + 1).charAt(0)));
+                if (l < 1000) {
+                    overlayText.setText("训练开始！");
+                } else {
+                    overlayText.setText(String.valueOf(String.valueOf(l / 1000).charAt(0)));
+                }
             }
 
             @Override
             public void onFinish() {
                 overlayText.setText("");
-                showToast("训练开始！");
+                predictor.reset();
                 time.start();
                 playing = true;
 
@@ -252,7 +266,9 @@ public class SingleActivity extends Activity implements View.OnClickListener, Ca
         TextView c = findViewById(R.id.total_count_text);
         c.setText("总计：" + actionCount);
         TextView k = findViewById(R.id.total_calories_text);
-        k.setText("卡路里：" + caloriesPerAction[pose] * actionCount + "cal");
+        double caloriesValue = actionCount * caloriesPerAction.get(pose);
+        DecimalFormat cd = new DecimalFormat("######.#");
+        k.setText("卡路里：" + cd.format(caloriesValue) + "cal");
         pageControl(3);
         clean();
     }
@@ -364,7 +380,7 @@ public class SingleActivity extends Activity implements View.OnClickListener, Ca
                 SingleActivity.this.savedImagePath = "";
             }
         }
-        actionCount = predictor.getActionCount(inTextureId, outTextureId, textureWidth, textureHeight, savedImagePath, pose, true)[0];
+        actionCount = predictor.getActionCount(action_id[pose], true)[0];
         return modified;
     }
 
