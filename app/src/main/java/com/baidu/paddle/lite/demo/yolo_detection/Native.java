@@ -38,14 +38,14 @@ public class Native {
         return nativeRelease(ctx);
     }
 
-    public boolean process(int inTextureId, int outTextureId, int textureWidth, int textureHeight, String savedImagePath) {
+    public boolean process(int inTextureId, int outTextureId, int textureWidth, int textureHeight, String savedImagePath,int actionid,boolean single) {
         if (ctx == 0) {
             return false;
         }
         return nativeProcess(ctx, inTextureId, outTextureId, textureWidth, textureHeight, savedImagePath, 1, true);
     }
 
-    public int[] getActionCount( int actionid, boolean single) {
+    public int[] getActionCount() {
         return nativeGetActionCount(ctx);
     }
 

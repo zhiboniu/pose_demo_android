@@ -43,9 +43,9 @@ public class SelectActivity extends Activity implements View.OnClickListener {
         LinearLayout poseSelect = findViewById(R.id.pose_select);
         for (int i = 1; i < pose_name.length; i++) {
             PoseButton newPose = new PoseButton(getApplicationContext());
-            int finalI = i;
-            newPose.setPoseName(pose_name[finalI]);
-            int poseImageId = getResources().getIdentifier(pose_image[finalI], "drawable", getPackageName());
+            final int t = i;
+            newPose.setPoseName(pose_name[t]);
+            int poseImageId = getResources().getIdentifier(pose_image[t], "drawable", getPackageName());
             newPose.setPoseImage(poseImageId);
             newPose.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -56,8 +56,8 @@ public class SelectActivity extends Activity implements View.OnClickListener {
                     } else if ("vs".equals(mode)) {
                         myIntent = new Intent(SelectActivity.this, VSActivity.class);
                     }
-                    myIntent.putExtra("pose", pose_action_id[finalI]);
-                    myIntent.putExtra("i",finalI);
+                    myIntent.putExtra("pose", pose_action_id[t]);
+                    myIntent.putExtra("i", t);
                     startActivity(myIntent);
                 }
             });
@@ -73,7 +73,6 @@ public class SelectActivity extends Activity implements View.OnClickListener {
 
     @Override
     public void onClick(View v) {
-        int pose = 0;
         switch (v.getId()) {
             case R.id.btn_back:
                 finish();

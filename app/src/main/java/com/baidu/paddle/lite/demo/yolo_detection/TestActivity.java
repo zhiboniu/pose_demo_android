@@ -88,7 +88,7 @@ public class TestActivity extends Activity implements View.OnClickListener, Came
         synchronized (this) {
             savedImagePath = TestActivity.this.savedImagePath;
         }
-        boolean modified = predictor.process(inTextureId, outTextureId, textureWidth, textureHeight, savedImagePath);
+        boolean modified = predictor.process(inTextureId, outTextureId, textureWidth, textureHeight, savedImagePath,1,true);
         if (!savedImagePath.isEmpty()) {
             synchronized (this) {
                 TestActivity.this.savedImagePath = "";
