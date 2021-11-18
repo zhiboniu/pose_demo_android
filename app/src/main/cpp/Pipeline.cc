@@ -156,19 +156,7 @@ void Pipeline::Action_Process(cv::Mat *rgbaImage,
                               std::vector<RESULT> &results,
                               int actionid,
                               bool single_person) {
-  char text[255];
-  cv::Scalar fontColor = cv::Scalar(255, 0, 0);
-  int fontFace = cv::FONT_HERSHEY_PLAIN;
-  double fontScale = 2.f;
-  float fontThickness = 2;
-  cv::Size textSize =
-      cv::getTextSize(text, fontFace, fontScale, fontThickness, nullptr);
-  textSize.height *= 1.25f;
-  cv::Point2d offset(10, textSize.height*5 + 15);
-
-  LOGD("pose: actionid: %d", actionid);
   if (single_person) {
-    //print action count on screen
     int action_count = get_action_count(0);
     //1: check_lateral_raise
     //2: check_stand_press
@@ -176,10 +164,6 @@ void Pipeline::Action_Process(cv::Mat *rgbaImage,
     if (!results.empty()) {
       action_count = single_action_check(results_kpts[0].keypoints, results[0].h*rgbaImage->rows, actionid, 0);
     }
-    sprintf(text, "Action Counts: %d", action_count);
-    offset.y += textSize.height;
-    cv::putText(*rgbaImage, text, offset, fontFace, fontScale, fontColor,
-                fontThickness);
   }
   else {
     double_action_check(results_kpts, results, actionid);
