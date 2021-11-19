@@ -155,7 +155,9 @@ void Pipeline::Action_Process(cv::Mat *rgbaImage,
                               std::vector<RESULT_KEYPOINT> &results_kpts,
                               std::vector<RESULT> &results,
                               int actionid,
-                              bool single_person) {
+                              bool single_person,
+                              int imgw) {
+  LOGD("DEBUG: single person:, actionid: %d, imgw: %d", actionid, imgw);
   if (single_person) {
     int action_count = get_action_count(0);
     //1: check_lateral_raise
@@ -166,7 +168,7 @@ void Pipeline::Action_Process(cv::Mat *rgbaImage,
     }
   }
   else {
-    double_action_check(results_kpts, results, actionid);
+    double_action_check(results_kpts, results, actionid, imgw);
   }
 }
 
@@ -206,7 +208,7 @@ bool Pipeline::Process(int inTexureId, int outTextureId, int textureWidth,
   // Visualize the status(performance data) to the origin image
 //  VisualizeStatus(readGLFBOTime, writeGLTextureTime, preprocessTime+preprocessTime_kpts,
 //                  predictTime+predictTime_kpts, postprocessTime+postprocessTime_kpts, &rgbaImage, results_kpts, results);
-  Action_Process(&rgbaImage, results_kpts, results, actionid, single);
+  Action_Process(&rgbaImage, results_kpts, results, actionid, single, textureWidth);
 
   // Dump modified image if savedImagePath is set
   if (!savedImagePath.empty()) {

@@ -35,4 +35,4 @@ int check_stand_press(std::vector<float> &kpts_sframe, int recid);
 int check_deep_down(std::vector<float> &kpts_sframe, int recid);
 int check_deep_down2(std::vector<float> &kpts_sframe, float h, int recid);
 int single_action_check(std::vector<float> &results_kpts, float h, int actionid, int recid=0);
-void double_action_check(std::vector<RESULT_KEYPOINT> &results_kpts, std::vector<RESULT> &results, int actionid);
+void double_action_check(std::vector<RESULT_KEYPOINT> &results_kpts, std::vector<RESULT> &results, int actionid, int imgw);

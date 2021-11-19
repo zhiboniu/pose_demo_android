@@ -215,7 +215,7 @@ int single_action_check(std::vector<float> &results_kpts, float h, int actionid,
   }
 }
 
-void double_action_check(std::vector<RESULT_KEYPOINT> &results_kpts, std::vector<RESULT> &results, int actionid) {
+void double_action_check(std::vector<RESULT_KEYPOINT> &results_kpts, std::vector<RESULT> &results, int actionid, int imgw) {
   std::vector<float> left, right;
   if (results_kpts.size() == 0) {
     return;
@@ -230,7 +230,7 @@ void double_action_check(std::vector<RESULT_KEYPOINT> &results_kpts, std::vector
     }
     for (int j=0; j < results_kpts[i].num_joints; j++) {
       if (results_kpts[i].keypoints[j*3] > 0.8) {
-        if (results_kpts[i].keypoints[j*3 + 1] < 400) {
+        if (results_kpts[i].keypoints[j*3 + 1] < imgw/2.) {
           left = results_kpts[i].keypoints;
           lh = results[i].h;
           if (results_kpts.size() > 1) {
@@ -254,7 +254,7 @@ void double_action_check(std::vector<RESULT_KEYPOINT> &results_kpts, std::vector
       }
     }
   }
-  if (left.empty() && right.empty() && results_kpts[maxid].keypoints[maxconf*3 + 1] < 400) {
+  if (left.empty() && right.empty() && results_kpts[maxid].keypoints[maxconf*3 + 1] < imgw/2.) {
     left = results_kpts[maxid].keypoints;
     lh = results[maxid].h;
     if (results_kpts.size() > 1) {

@@ -43,7 +43,7 @@ public class SelectActivity extends Activity implements View.OnClickListener {
         LinearLayout poseSelect = findViewById(R.id.pose_select);
         for (int i = 1; i < pose_name.length; i++) {
             PoseButton newPose = new PoseButton(getApplicationContext());
-            int finalI = i;
+            final int finalI = i;
             newPose.setPoseName(pose_name[finalI]);
             int poseImageId = getResources().getIdentifier(pose_image[finalI], "drawable", getPackageName());
             newPose.setPoseImage(poseImageId);
