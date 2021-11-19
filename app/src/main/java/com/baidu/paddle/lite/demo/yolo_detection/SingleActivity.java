@@ -146,7 +146,7 @@ public class SingleActivity extends Activity implements View.OnClickListener, Ca
         TextView poseTitle = findViewById(R.id.title_single);
         poseTitle.setText(title[pose]);
 
-        //演示视频播放
+        //演示视频播放 todo 修改成动态
         String uri = "android.resource://" + getPackageName() + "/";
         if (pose == 1) {
             uri += R.raw.pose_a_single;
@@ -163,12 +163,7 @@ public class SingleActivity extends Activity implements View.OnClickListener, Ca
             @Override
             public void onPrepared(MediaPlayer mediaPlayer) {
                 mediaPlayer.setVolume(0f, 0f);
-            }
-        });
-        sampleVideo.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-            @Override
-            public void onCompletion(MediaPlayer mediaPlayer) {
-                mediaPlayer.seekTo(0);
+                mediaPlayer.setLooping(true);
             }
         });
         sampleVideo.start();
@@ -263,6 +258,7 @@ public class SingleActivity extends Activity implements View.OnClickListener, Ca
 
     private void stop() {
         //重置chronometer并跳转页面
+        overlayText.setText("");
         TextView c = findViewById(R.id.total_count_text);
         c.setText("总计：" + actionCount);
         TextView k = findViewById(R.id.total_calories_text);
@@ -295,10 +291,8 @@ public class SingleActivity extends Activity implements View.OnClickListener, Ca
     }
 
     private void remake() {
-        //重置chronometer并回到主页
-        Intent intent = getIntent();
-        finish();
-        startActivity(intent);
+        clean();
+        pageControl(1);
     }
 
     private void clean() {
@@ -309,6 +303,7 @@ public class SingleActivity extends Activity implements View.OnClickListener, Ca
             overlayText.setText("");
             playing = false;
             pausing = false;
+            predictor.reset();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -374,13 +369,13 @@ public class SingleActivity extends Activity implements View.OnClickListener, Ca
         synchronized (this) {
             savedImagePath = SingleActivity.this.savedImagePath;
         }
-        boolean modified = predictor.process(inTextureId, outTextureId, textureWidth, textureHeight, savedImagePath);
+        boolean modified = predictor.process(inTextureId, outTextureId, textureWidth, textureHeight, savedImagePath, action_id[pose], true);
         if (!savedImagePath.isEmpty()) {
             synchronized (this) {
                 SingleActivity.this.savedImagePath = "";
             }
         }
-        actionCount = predictor.getActionCount(action_id[pose], true)[0];
+        actionCount = predictor.getActionCount()[0];
         return modified;
     }
 
