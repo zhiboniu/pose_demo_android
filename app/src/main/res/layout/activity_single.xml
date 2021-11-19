@@ -22,7 +22,7 @@
                 android:id="@+id/title_single"
                 android:layout_marginTop="10dp"
                 android:layout_marginLeft="150dp"
-                android:textSize="30dp"
+                android:textSize="30sp"
                 android:textColor="#FFFFFF"/>
         <ImageView
                 android:id="@+id/btn_home"
@@ -52,136 +52,108 @@
                 android:layout_height="match_parent"
                 android:orientation="horizontal">
 
-            <RelativeLayout
-                    android:layout_width="match_parent"
+
+            <ImageView
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_gravity="center_vertical"
+                    android:src="@drawable/time"
+                    android:layout_weight="1"/>
+
+            <LinearLayout
+                    android:layout_width="wrap_content"
                     android:layout_height="match_parent"
+                    android:orientation="vertical"
                     android:layout_weight="1"
-                    android:padding="5dp"
-                  >
+                    android:gravity="center">
 
-                <ImageView
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
-                        android:layout_gravity="center_vertical"
-                        android:layout_alignParentLeft="true"
-                        android:layout_centerVertical="true"
-                        android:src="@drawable/time"/>
-
-                <LinearLayout
+                <TextView
                         android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:layout_marginLeft="3dp"
-                        android:layout_alignParentRight="true"
-                        android:layout_centerVertical="true"
-                        android:orientation="vertical">
+                        android:layout_height="wrap_content"
+                        android:text="Timer"
+                        android:textColor="#ffffff"
+                        android:textSize="20sp"
+                        android:textStyle="bold"/>
+                <TextView
+                        android:id="@+id/time_count"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:text="0s"
+                        android:textColor="#ffffff"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        android:countDown="true"/>
+            </LinearLayout>
 
 
-                    <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Timer"
-                            android:textColor="#ffffff"
-                            android:textSize="20sp"
-                            android:textStyle="bold"/>
-                    <TextView
-                            android:id="@+id/time_count"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center_horizontal"
-                            android:text="0s"
-                            android:textColor="#ffffff"
-                            android:textSize="20sp"
-                            android:textStyle="bold"
-                            android:countDown="true"/>
-                </LinearLayout>
-            </RelativeLayout>
-
-
-            <RelativeLayout
-                    android:layout_width="match_parent"
+            <ImageView
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_alignParentLeft="true"
+                    android:layout_centerVertical="true"
+                    android:src="@drawable/count"
+                    android:layout_weight="1"/>
+            <LinearLayout
+                    android:layout_width="wrap_content"
                     android:layout_height="match_parent"
+                    android:orientation="vertical"
                     android:layout_weight="1"
-                    android:padding="5dp"
-            >
-                <ImageView
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
-                        android:layout_gravity="center_vertical"
+                    android:gravity="center">
 
-                        android:layout_alignParentLeft="true"
-                        android:layout_centerVertical="true"
-                        android:src="@drawable/count" android:layout_marginLeft="0dp"></ImageView>
-                <LinearLayout
+                <TextView
                         android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:layout_marginLeft="1dp"
-                        android:layout_alignParentRight="true"
-                        android:layout_centerVertical="true"
-                        android:orientation="vertical">
+                        android:layout_height="wrap_content"
+                        android:text="Count"
+                        android:textColor="#ffffff"
+                        android:textSize="20sp"
+                        android:textStyle="bold"/>
 
-                    <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Count"
-                            android:textColor="#ffffff"
-                            android:textSize="20sp"
-                            android:textStyle="bold"/>
+                <TextView
+                        android:id="@+id/count_count"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:text="0"
+                        android:textColor="#ffffff"
+                        android:textSize="20sp"
+                        android:textStyle="bold"/>
+            </LinearLayout>
 
-                    <TextView
-                            android:id="@+id/count_count"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center_horizontal"
-                            android:text="0"
-                            android:textColor="#ffffff"
-                            android:textSize="20sp"
-                            android:textStyle="bold"/>
-                </LinearLayout>
-            </RelativeLayout>
+            <ImageView
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_gravity="center_vertical"
+                    android:src="@drawable/calories"
+                    android:layout_weight="1"/>
 
-
-            <RelativeLayout
-                    android:layout_width="match_parent"
+            <LinearLayout
+                    android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:padding="5dp"
-            >
-                <ImageView
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
-                        android:layout_gravity="center_vertical"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:layout_weight="1">
 
-                        android:layout_alignParentLeft="true"
-                        android:layout_centerVertical="true"
-                        android:src="@drawable/calories"/>
-
-                <LinearLayout
+                <TextView
                         android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:layout_marginLeft="1dp"
-                        android:layout_alignParentRight="true"
-                        android:layout_centerVertical="true"
-                        android:orientation="vertical">
+                        android:layout_height="wrap_content"
+                        android:text="Calories"
+                        android:textColor="#ffffff"
+                        android:textSize="20sp"
+                        android:textStyle="bold"/>
 
-                    <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Calories"
-                            android:textColor="#ffffff"
-                            android:textSize="20sp"
-                            android:textStyle="bold"/>
+                <TextView
+                        android:id="@+id/calories_count"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:text="0.0cal"
+                        android:textColor="#ffffff"
+                        android:textSize="20sp"
+                        android:textStyle="bold"/>
+            </LinearLayout>
 
-                    <TextView
-                            android:id="@+id/calories_count"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center_horizontal"
-                            android:text="0"
-                            android:textColor="#ffffff"
-                            android:textSize="20sp"
-                            android:textStyle="bold"/>
-                </LinearLayout>
-            </RelativeLayout>
         </LinearLayout>
     </FrameLayout>
 
@@ -226,13 +198,13 @@
                     android:orientation="vertical">
                 <VideoView
                         android:layout_width="300dp"
-                        android:layout_height="400dp"
+                        android:layout_height="300dp"
                         android:id="@+id/sample_video"
                 />
                 <TextView
                         android:layout_height="wrap_content"
                         android:layout_width="wrap_content"
-                        android:textSize="30dp"
+                        android:textSize="30sp"
                         android:textColor="#FFFFFF"
                         android:text="选择训练时间"/>
                 <TextView
@@ -281,7 +253,7 @@
                         android:textColor="#ffffff"
                         android:textSize="20sp"
                         android:textStyle="bold"
-                android:layout_margin="10dp"/>
+                        android:layout_margin="10dp"/>
 
                 <Button
                         android:id="@+id/stop"
@@ -321,7 +293,7 @@
                         android:layout_height="wrap_content"
                         android:text="时间到！"
                         android:textColor="#FFFFFF"
-                        android:textSize="40dp"/>
+                        android:textSize="40sp"/>
 
                 <TextView
                         android:id="@+id/total_count_text"

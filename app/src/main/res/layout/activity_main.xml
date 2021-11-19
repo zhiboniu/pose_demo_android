@@ -12,23 +12,15 @@
             android:layout_height="70dp"
             android:layout_marginLeft="10dp"
             android:src="@drawable/logo"
-    ></ImageView>
+    />
 
-    <FrameLayout
+    <RelativeLayout
             android:layout_marginTop="20dp"
             android:id="@+id/main_select_singlemode"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
-
-        <ImageView
-                android:layout_marginLeft="20dp"
-                android:layout_marginRight="20dp"
-                android:layout_marginTop="10dp"
-                android:layout_width="match_parent"
-                android:layout_height="250dp"
-                android:scaleType="fitXY"
-                android:src="@drawable/single"
-        ></ImageView>
+            android:layout_width="match_parent"
+            android:layout_height="250dp"
+            android:background="@drawable/single"
+            android:layout_margin="20dp">
 
 
         <TextView
@@ -38,9 +30,10 @@
                 android:textColor="#ffffff"
                 android:textStyle="bold"
                 android:textSize="25sp"
-                android:layout_marginTop="30dp"
-                android:layout_marginLeft="30dp"
-        ></TextView>
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true"
+                android:padding="30dp"
+        />
 
         <TextView
                 android:layout_width="wrap_content"
@@ -49,10 +42,11 @@
                 android:textColor="#DEEBF7"
                 android:textStyle="bold"
                 android:textSize="22sp"
-                android:layout_marginTop="200dp"
-                android:layout_marginLeft="130dp"
-        ></TextView>
-    </FrameLayout>
+                android:layout_alignParentRight="true"
+                android:layout_alignParentBottom="true"
+                android:padding="20dp"
+        />
+    </RelativeLayout>
 
     <TextView
             android:layout_width="wrap_content"
@@ -62,24 +56,17 @@
             android:textStyle="bold"
             android:textSize="32sp"
             android:layout_gravity="center_horizontal"
-            android:layout_marginTop="30dp"
-    ></TextView>
+
+    />
 
 
-    <FrameLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+    <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="250dp"
             android:id="@+id/main_select_vsmode"
+            android:background="@drawable/vs"
+            android:layout_margin="20dp"
     >
-        <ImageView
-                android:layout_marginLeft="20dp"
-                android:layout_marginRight="20dp"
-                android:layout_width="match_parent"
-                android:layout_height="250dp"
-                android:scaleType="fitXY"
-                android:layout_marginTop="30dp"
-                android:src="@drawable/vs"
-        ></ImageView>
 
         <TextView
                 android:layout_width="wrap_content"
@@ -88,9 +75,10 @@
                 android:textColor="#ffffff"
                 android:textStyle="bold"
                 android:textSize="25sp"
-                android:layout_marginTop="190dp"
-                android:layout_marginLeft="30dp"
-        ></TextView>
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentBottom="true"
+                android:padding="30dp"
+        />
         <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -98,9 +86,10 @@
                 android:textColor="#DEEBF7"
                 android:textStyle="bold"
                 android:textSize="22sp"
-                android:layout_marginTop="220dp"
-                android:layout_marginLeft="230dp"
-        ></TextView>
-    </FrameLayout>
+                android:layout_alignParentRight="true"
+                android:layout_alignParentBottom="true"
+                android:padding="20dp"
+        />
+    </RelativeLayout>
 
 </LinearLayout>
