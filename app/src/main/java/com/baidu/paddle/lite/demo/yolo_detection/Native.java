@@ -42,7 +42,7 @@ public class Native {
         if (ctx == 0) {
             return false;
         }
-        return nativeProcess(ctx, inTextureId, outTextureId, textureWidth, textureHeight, savedImagePath, 1, true);
+        return nativeProcess(ctx, inTextureId, outTextureId, textureWidth, textureHeight, savedImagePath, actionid, single); 
     }
 
     public int[] getActionCount() {
