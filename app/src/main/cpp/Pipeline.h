@@ -69,7 +69,7 @@ private:
   void VisualizeResults(const std::vector<RESULT> &results, cv::Mat *rgbaImage);
   void VisualizeKptsResults(const std::vector<RESULT> &results,
                             const std::vector<RESULT_KEYPOINT> &results_kpts,
-                            cv::Mat *rgbaImage);
+                            cv::Mat *rgbaImage, bool vis_rect=false);
   // Visualize the status(performace data) to origin image
   void VisualizeStatus(double readGLFBOTime, double writeGLTextureTime,
                        double preprocessTime, double predictTime,
