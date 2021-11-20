@@ -61,31 +61,33 @@ void Pipeline::VisualizeResults(const std::vector<RESULT> &results,
 
 void Pipeline::VisualizeKptsResults(
     const std::vector<RESULT> &results,
-    const std::vector<RESULT_KEYPOINT> &results_kpts, cv::Mat *rgbaImage) {
-  int w = rgbaImage->cols;
-  int h = rgbaImage->rows;
-  for (int i = 0; i < results.size(); i++) {
-    RESULT object = results[i];
-    cv::Rect boundingBox =
-        cv::Rect(object.x * w, object.y * h, object.w * w, object.h * h) &
-        cv::Rect(0, 0, w - 1, h - 1);
-    // Configure text size
-    std::string text = object.class_name + " ";
-    text += std::to_string(static_cast<int>(object.score * 100)) + "%";
-    int fontFace = cv::FONT_HERSHEY_PLAIN;
-    double fontScale = 1.5f;
-    float fontThickness = 1.0f;
-    cv::Size textSize =
-        cv::getTextSize(text, fontFace, fontScale, fontThickness, nullptr);
-    // Draw roi object, text, and background
-    cv::rectangle(*rgbaImage, boundingBox, object.fill_color, 2);
-    cv::rectangle(*rgbaImage,
-                  cv::Point2d(boundingBox.x,
-                              boundingBox.y - round(textSize.height * 1.25f)),
-                  cv::Point2d(boundingBox.x + boundingBox.width, boundingBox.y),
-                  object.fill_color, -1);
-    cv::putText(*rgbaImage, text, cv::Point2d(boundingBox.x, boundingBox.y),
-                fontFace, fontScale, cv::Scalar(255, 255, 255), fontThickness);
+    const std::vector<RESULT_KEYPOINT> &results_kpts, cv::Mat *rgbaImage, bool vis_rect) {
+  if (vis_rect) {
+    int w = rgbaImage->cols;
+    int h = rgbaImage->rows;
+    for (int i = 0; i < results.size(); i++) {
+      RESULT object = results[i];
+      cv::Rect boundingBox =
+          cv::Rect(object.x * w, object.y * h, object.w * w, object.h * h) &
+          cv::Rect(0, 0, w - 1, h - 1);
+      // Configure text size
+      std::string text = object.class_name + " ";
+      text += std::to_string(static_cast<int>(object.score * 100)) + "%";
+      int fontFace = cv::FONT_HERSHEY_PLAIN;
+      double fontScale = 1.5f;
+      float fontThickness = 1.0f;
+      cv::Size textSize =
+          cv::getTextSize(text, fontFace, fontScale, fontThickness, nullptr);
+      // Draw roi object, text, and background
+      cv::rectangle(*rgbaImage, boundingBox, object.fill_color, 2);
+      cv::rectangle(*rgbaImage,
+                    cv::Point2d(boundingBox.x,
+                                boundingBox.y - round(textSize.height * 1.25f)),
+                    cv::Point2d(boundingBox.x + boundingBox.width, boundingBox.y),
+                    object.fill_color, -1);
+      cv::putText(*rgbaImage, text, cv::Point2d(boundingBox.x, boundingBox.y),
+                  fontFace, fontScale, cv::Scalar(255, 255, 255), fontThickness);
+    }
   }
 
   const int edge[][2] = {{0, 1},   {0, 2},  {1, 3},   {2, 4},   {3, 5},
@@ -157,7 +159,6 @@ void Pipeline::Action_Process(cv::Mat *rgbaImage,
                               int actionid,
                               bool single_person,
                               int imgw) {
-  LOGD("DEBUG: single person:, actionid: %d, imgw: %d", actionid, imgw);
   if (single_person) {
     int action_count = get_action_count(0);
     //1: check_lateral_raise
@@ -203,7 +204,7 @@ bool Pipeline::Process(int inTexureId, int outTextureId, int textureWidth,
 
   // Visualize the objects to the origin image
 //  VisualizeResults(results, &rgbaImage);
-  VisualizeKptsResults(results, results_kpts, &rgbaImage);
+  VisualizeKptsResults(results, results_kpts, &rgbaImage, false);
 
   // Visualize the status(performance data) to the origin image
 //  VisualizeStatus(readGLFBOTime, writeGLTextureTime, preprocessTime+preprocessTime_kpts,
