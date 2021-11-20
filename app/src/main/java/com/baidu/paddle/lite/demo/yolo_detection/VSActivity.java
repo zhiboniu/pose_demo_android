@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -16,6 +17,8 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.app.Activity;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.*;
 
 import com.baidu.paddle.lite.demo.common.CameraSurfaceView;
@@ -65,6 +68,9 @@ public class VSActivity extends Activity implements View.OnClickListener, Camera
     @Override
     protected void onCreate(Bundle savedInstanceBundle) {
         super.onCreate(savedInstanceBundle);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);//隐藏标题
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);//设置全屏
         setContentView(R.layout.activity_vs);
         initSettings();
         initView();
@@ -150,8 +156,8 @@ public class VSActivity extends Activity implements View.OnClickListener, Camera
 
         overlayText = findViewById(R.id.overlay_text);
         timeShow = findViewById(R.id.time_show);
-        TextView poseTitle = findViewById(R.id.title_single);
-        poseTitle.setText(title[pose]);
+        //TextView poseTitle = findViewById(R.id.title_single);
+        //poseTitle.setText(title[pose]);
 
         //演示视频播放 todo 修改成动态
         String uri = "android.resource://" + getPackageName() + "/";
@@ -193,18 +199,19 @@ public class VSActivity extends Activity implements View.OnClickListener, Camera
         }
 
         if (page == 1) {
-            overlayText.setText("");
+            overlayText.setVisibility(View.GONE);
             beforePlayingControl.setVisibility(View.VISIBLE);
             playingControl.setVisibility(View.GONE);
             afterPlayingControl.setVisibility(View.GONE);
             svPreview.setVisibility(View.GONE);
         } else if (page == 2) {
+            overlayText.setVisibility(View.VISIBLE);
             beforePlayingControl.setVisibility(View.GONE);
             playingControl.setVisibility(View.VISIBLE);
             afterPlayingControl.setVisibility(View.GONE);
             svPreview.setVisibility(View.VISIBLE);
         } else if (page == 3) {
-            overlayText.setText("");
+            overlayText.setVisibility(View.GONE);
             beforePlayingControl.setVisibility(View.GONE);
             playingControl.setVisibility(View.GONE);
             afterPlayingControl.setVisibility(View.VISIBLE);
@@ -214,27 +221,33 @@ public class VSActivity extends Activity implements View.OnClickListener, Camera
     }
 
     private CountDownTimer getCountDownTimer(long millisInFuture) {
-        return new CountDownTimer(millisInFuture, 1000) {
+        return new CountDownTimer(millisInFuture, 200) {
             @Override
             public void onTick(long l) {
-                timer.setText(Math.floor(l / 1000 + 1) + "s");
+                show();
                 millisUntilFinished = l;
             }
 
             @Override
             public void onFinish() {
+                show();
                 stop();
             }
         };
     }
-    private void showCountAndCalories(){
-        countA.setText(actionCountA);
-        countB.setText(actionCountB);
+
+    private void show() {
+        DecimalFormat td = new DecimalFormat("#####");
+        timer.setText(td.format(millisUntilFinished / 1000 + 1) + "s");
+        countA.setText(String.valueOf(actionCountA));
+        countB.setText(String.valueOf(actionCountB));
         double caloriesValueA = actionCountA * caloriesPerAction.get(pose);
         double caloriesValueB = actionCountB * caloriesPerAction.get(pose);
         DecimalFormat cd = new DecimalFormat("######.#");
         caloriesA.setText(cd.format(caloriesValueA) + "cal");
+        caloriesB.setText(cd.format(caloriesValueB) + "cal");
     }
+
     private void start() {
         actionCountA = 0;
         actionCountB = 0;
@@ -270,11 +283,17 @@ public class VSActivity extends Activity implements View.OnClickListener, Camera
     private void stop() {
         svPreview.releaseCamera();
         TextView c = findViewById(R.id.total_count_text);
-        c.setText("总计：" + actionCountA);
-        TextView k = findViewById(R.id.total_calories_text);
-        double caloriesValue = actionCountA * caloriesPerAction.get(pose);
-        DecimalFormat cd = new DecimalFormat("######.#");
-        k.setText("卡路里：" + cd.format(caloriesValue) + "cal");
+        c.setText("左边：" + actionCountA + "个/右边：" + actionCountB + "个");
+        TextView r = findViewById(R.id.result_text);
+        final int i = actionCountA - actionCountB;
+        if (i > 0) {
+            r.setText("左边胜利！");
+        } else if (i == 0) {
+            r.setText("平局！");
+        } else {
+            r.setText("右边胜利！");
+        }
+
         pageControl(3);
         clean();
     }
@@ -385,7 +404,6 @@ public class VSActivity extends Activity implements View.OnClickListener, Camera
         }
         actionCountA = predictor.getActionCount()[0];
         actionCountB = predictor.getActionCount()[1];
-        showCountAndCalories();
         return modified;
     }
 

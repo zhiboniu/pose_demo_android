@@ -41,9 +41,9 @@ public class MainActivity extends Activity implements View.OnClickListener {
                 break;
             case R.id.main_select_vsmode:
                 showToast("暂未开放，敬请期待！");
-                /**Intent j = new Intent(MainActivity.this, SelectActivity.class);
+                Intent j = new Intent(MainActivity.this, SelectActivity.class);
                  j.putExtra("mode", "vs");
-                 startActivity(j);*/
+                 startActivity(j);
                 break;
             case R.id.pplogo:
                 clickedLogo++;

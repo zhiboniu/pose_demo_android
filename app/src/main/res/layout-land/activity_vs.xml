@@ -92,8 +92,19 @@
                 android:layout_width="400dp"
                 android:layout_height="300dp"
                 android:layout_centerInParent="true"
-                android:visibility="visible">
+                android:visibility="visible"
+        android:id="@+id/sv_preview">
         </com.baidu.paddle.lite.demo.common.CameraSurfaceView>
+
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/overlay_text"
+                android:layout_centerInParent="true"
+                android:textColor="#ffffff"
+                android:textSize="60sp"
+                android:textStyle="bold"
+        ></TextView>
         <RelativeLayout
                 android:id="@+id/before_playing_control"
                 android:layout_width="500dp"
@@ -213,7 +224,13 @@
                     android:id="@+id/total_count_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="总计："
+                    android:textColor="#ffffff"
+                    android:textSize="20sp"
+                    android:textStyle="bold"/>
+            <TextView
+                    android:id="@+id/result_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:textColor="#ffffff"
                     android:textSize="20sp"
                     android:textStyle="bold"/>
