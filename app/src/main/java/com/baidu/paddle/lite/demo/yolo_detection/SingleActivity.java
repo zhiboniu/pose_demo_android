@@ -207,25 +207,30 @@ public class SingleActivity extends Activity implements View.OnClickListener, Ca
     }
 
     private CountDownTimer getCountDownTimer(long millisInFuture) {
-        return new CountDownTimer(millisInFuture, 1000) {
+        return new CountDownTimer(millisInFuture, 200) {
             @Override
             public void onTick(long l) {
-                timer.setText(Math.floor(l / 1000 + 1) + "s");
                 millisUntilFinished = l;
+                show();
             }
 
             @Override
             public void onFinish() {
+                show();
                 stop();
             }
         };
     }
-    private void showCountAndCalories(){
-        count.setText(actionCount);
+
+    private void show() {
+        DecimalFormat td=new DecimalFormat("#####");
+        timer.setText(td.format(millisUntilFinished / 1000 + 1) +"s");
+        count.setText(String.valueOf(actionCount));
         double caloriesValue = actionCount * caloriesPerAction.get(pose);
         DecimalFormat cd = new DecimalFormat("######.#");
         calories.setText(cd.format(caloriesValue) + "cal");
     }
+
     private void start() {
         actionCount = 0;
         count.setText("0");
@@ -372,7 +377,6 @@ public class SingleActivity extends Activity implements View.OnClickListener, Ca
             }
         }
         actionCount = predictor.getActionCount()[0];
-        showCountAndCalories();
         return modified;
     }
 
