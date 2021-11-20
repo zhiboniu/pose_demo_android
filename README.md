@@ -8,9 +8,9 @@ pose demo on android mobile based on PaddleDetection
 
 
 ## APP安装体验
-* Andoird APP[下载体验](http://d.3appstore.com/ars5)
+* Andoird APP[下载体验](https://paddledet.bj.bcebos.com/deploy/paddlelite/PP_TinyPose.apk)
 * 安装二维码：
-[image]（待定）
+[image]（pictures/PP-TinyPose_download.png）
 
 
 
