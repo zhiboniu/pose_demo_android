@@ -2,13 +2,13 @@
 pose demo on android mobile based on PaddleDetection
 
 本工程Android部分基于[Paddle-Lite-Demo](https://github.com/PaddlePaddle/Paddle-Lite-Demo)修改。
-算法模型基于[PaddldDetection](https://github.com/PaddlePaddle/PaddleDetection).
+算法模型基于[PaddleDetection](https://github.com/PaddlePaddle/PaddleDetection).
 如欲获取更多详情，请点击链接至相应repo中查看。
 
 
 
 ## APP安装体验
-* Andoird APP[下载体验](http://d.3appstore.com/ars5)
+* Android APP[下载体验](http://d.3appstore.com/ars5)
 * 安装二维码：
 [image]（待定）
 
@@ -46,7 +46,7 @@ $ git clone https://github.com/zhiboniu/pose_demo_android
 
 ## 代码结构介绍
 主要源码位于工程pose_demo_android/app/src/main目录下，由三大部分组成java、cpp、assets。
-* java: Andoird前端界面相关代码部分
+* java: Android前端界面相关代码部分
 * cpp: 算法实现相关代码
 * assets: 模型存放位置
 
