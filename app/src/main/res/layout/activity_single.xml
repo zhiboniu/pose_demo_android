@@ -148,7 +148,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
-                        android:text="0.0cal"
+                        android:text="0cal"
                         android:textColor="#ffffff"
                         android:textSize="20sp"
                         android:textStyle="bold"/>
@@ -293,7 +293,11 @@
                         android:layout_height="wrap_content"
                         android:text="时间到！"
                         android:textColor="#FFFFFF"
-                        android:textSize="40sp"/>
+                        android:textStyle="bold"
+                        android:paddingLeft="25dp"
+                        android:paddingBottom="20dp"
+                        android:textSize="40sp"
+                />
 
                 <TextView
                         android:id="@+id/total_count_text"
@@ -311,7 +315,8 @@
                         android:text="卡路里："
                         android:textColor="#ffffff"
                         android:textSize="20sp"
-                        android:textStyle="bold"/>
+                        android:textStyle="bold"
+                android:paddingBottom="20dp"/>
 
                 <LinearLayout
                         android:layout_width="wrap_content"
