@@ -186,18 +186,19 @@ public class SingleActivity extends Activity implements View.OnClickListener, Ca
         }
 
         if (page == 1) {
-            overlayText.setText("");
+            overlayText.setVisibility(View.GONE);
             beforePlayingControl.setVisibility(View.VISIBLE);
             playingControl.setVisibility(View.GONE);
             afterPlayingControl.setVisibility(View.GONE);
             svPreview.setVisibility(View.GONE);
         } else if (page == 2) {
+            overlayText.setVisibility(View.VISIBLE);
             beforePlayingControl.setVisibility(View.GONE);
             playingControl.setVisibility(View.VISIBLE);
             afterPlayingControl.setVisibility(View.GONE);
             svPreview.setVisibility(View.VISIBLE);
         } else if (page == 3) {
-            overlayText.setText("");
+            overlayText.setVisibility(View.GONE);
             beforePlayingControl.setVisibility(View.GONE);
             playingControl.setVisibility(View.GONE);
             afterPlayingControl.setVisibility(View.VISIBLE);
@@ -272,9 +273,7 @@ public class SingleActivity extends Activity implements View.OnClickListener, Ca
         clean();
     }
 
-    private void pause() {
-        //翻转暂停变量，并对chronometer做相应操作
-        showToast("暂停训练！");
+    private void pause(){
         Button btnPause = findViewById(R.id.pause);
         if (playing) {
             pausing = !pausing;
