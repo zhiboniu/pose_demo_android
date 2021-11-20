@@ -186,18 +186,19 @@ public class SingleActivity extends Activity implements View.OnClickListener, Ca
         }
 
         if (page == 1) {
-            overlayText.setText("");
+            overlayText.setVisibility(View.GONE);
             beforePlayingControl.setVisibility(View.VISIBLE);
             playingControl.setVisibility(View.GONE);
             afterPlayingControl.setVisibility(View.GONE);
             svPreview.setVisibility(View.GONE);
         } else if (page == 2) {
+            overlayText.setVisibility(View.VISIBLE);
             beforePlayingControl.setVisibility(View.GONE);
             playingControl.setVisibility(View.VISIBLE);
             afterPlayingControl.setVisibility(View.GONE);
             svPreview.setVisibility(View.VISIBLE);
         } else if (page == 3) {
-            overlayText.setText("");
+            overlayText.setVisibility(View.GONE);
             beforePlayingControl.setVisibility(View.GONE);
             playingControl.setVisibility(View.GONE);
             afterPlayingControl.setVisibility(View.VISIBLE);
@@ -207,25 +208,30 @@ public class SingleActivity extends Activity implements View.OnClickListener, Ca
     }
 
     private CountDownTimer getCountDownTimer(long millisInFuture) {
-        return new CountDownTimer(millisInFuture, 1000) {
+        return new CountDownTimer(millisInFuture, 200) {
             @Override
             public void onTick(long l) {
-                timer.setText(Math.floor(l / 1000 + 1) + "s");
                 millisUntilFinished = l;
+                show();
             }
 
             @Override
             public void onFinish() {
+                show();
                 stop();
             }
         };
     }
-    private void showCountAndCalories(){
-        count.setText(actionCount);
+
+    private void show() {
+        DecimalFormat td=new DecimalFormat("#####");
+        timer.setText(td.format(millisUntilFinished / 1000 + 1) +"s");
+        count.setText(String.valueOf(actionCount));
         double caloriesValue = actionCount * caloriesPerAction.get(pose);
         DecimalFormat cd = new DecimalFormat("######.#");
         calories.setText(cd.format(caloriesValue) + "cal");
     }
+
     private void start() {
         actionCount = 0;
         count.setText("0");
@@ -267,9 +273,7 @@ public class SingleActivity extends Activity implements View.OnClickListener, Ca
         clean();
     }
 
-    private void pause() {
-        //翻转暂停变量，并对chronometer做相应操作
-        showToast("暂停训练！");
+    private void pause(){
         Button btnPause = findViewById(R.id.pause);
         if (playing) {
             pausing = !pausing;
@@ -372,7 +376,6 @@ public class SingleActivity extends Activity implements View.OnClickListener, Ca
             }
         }
         actionCount = predictor.getActionCount()[0];
-        showCountAndCalories();
         return modified;
     }
 
