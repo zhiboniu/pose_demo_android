@@ -186,18 +186,25 @@ public class SingleActivity extends Activity implements View.OnClickListener, Ca
         }
 
         if (page == 1) {
+            playing = false;
+            pausing = false;
             overlayText.setVisibility(View.GONE);
             beforePlayingControl.setVisibility(View.VISIBLE);
             playingControl.setVisibility(View.GONE);
             afterPlayingControl.setVisibility(View.GONE);
             svPreview.setVisibility(View.GONE);
         } else if (page == 2) {
+
+            playing = true;
+            pausing = false;
             overlayText.setVisibility(View.VISIBLE);
             beforePlayingControl.setVisibility(View.GONE);
             playingControl.setVisibility(View.VISIBLE);
             afterPlayingControl.setVisibility(View.GONE);
             svPreview.setVisibility(View.VISIBLE);
         } else if (page == 3) {
+            playing = false;
+            pausing = false;
             overlayText.setVisibility(View.GONE);
             beforePlayingControl.setVisibility(View.GONE);
             playingControl.setVisibility(View.GONE);
@@ -224,27 +231,28 @@ public class SingleActivity extends Activity implements View.OnClickListener, Ca
     }
 
     private void show() {
-        DecimalFormat td=new DecimalFormat("#####");
-        timer.setText(td.format(millisUntilFinished / 1000 + 1) +"s");
+        DecimalFormat td = new DecimalFormat("#####");
+        timer.setText(td.format(millisUntilFinished / 1000 + 1) + "s");
         count.setText(String.valueOf(actionCount));
         double caloriesValue = actionCount * caloriesPerAction.get(pose);
-        DecimalFormat cd = new DecimalFormat("######.#");
+        DecimalFormat cd;
+        if ((Math.floor(caloriesValue) - caloriesValue) != 0) {
+            cd = new DecimalFormat("######.#");
+        } else {
+            cd = new DecimalFormat("######");
+        }
         calories.setText(cd.format(caloriesValue) + "cal");
     }
 
     private void start() {
-        actionCount = 0;
-        count.setText("0");
-        calories.setText("0cal");
         time = getCountDownTimer(timeSecond * 1000L);
-        overlayText.setText("准备好了吗？");
+        overlayText.setText("准备好了吗?");
         timer.setText(timeSecond + "s");
-
         new CountDownTimer(4000, 1000) {
             @Override
             public void onTick(long l) {
                 if (l < 1000) {
-                    overlayText.setText("训练开始！");
+                    overlayText.setText("训练开始!");
                 } else {
                     overlayText.setText(String.valueOf(String.valueOf(l / 1000).charAt(0)));
                 }
@@ -255,7 +263,9 @@ public class SingleActivity extends Activity implements View.OnClickListener, Ca
                 overlayText.setText("");
                 predictor.reset();
                 time.start();
-                playing = true;
+                actionCount = 0;
+                count.setText("0");
+                calories.setText("0cal");
             }
         }.start();
         pageControl(2);
@@ -270,10 +280,9 @@ public class SingleActivity extends Activity implements View.OnClickListener, Ca
         DecimalFormat cd = new DecimalFormat("######.#");
         k.setText("卡路里：" + cd.format(caloriesValue) + "cal");
         pageControl(3);
-        clean();
     }
 
-    private void pause(){
+    private void pause() {
         Button btnPause = findViewById(R.id.pause);
         if (playing) {
             pausing = !pausing;
@@ -293,22 +302,7 @@ public class SingleActivity extends Activity implements View.OnClickListener, Ca
     }
 
     private void remake() {
-        clean();
         pageControl(1);
-    }
-
-    private void clean() {
-        try {
-            timer.setText("0s");
-            actionCount = 0;
-            time.cancel();
-            overlayText.setText("");
-            playing = false;
-            pausing = false;
-            predictor.reset();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     @Override
