@@ -194,6 +194,7 @@ public class SingleActivity extends Activity implements View.OnClickListener, Ca
             afterPlayingControl.setVisibility(View.GONE);
             svPreview.setVisibility(View.GONE);
         } else if (page == 2) {
+
             playing = true;
             pausing = false;
             overlayText.setVisibility(View.VISIBLE);
