@@ -43,14 +43,14 @@ public:
   void Predict(const cv::Mat &rgbImage, std::vector<RESULT> *results,
                std::vector<RESULT_KEYPOINT> *results_kpts,
                double *preprocessTime, double *predictTime,
-               double *postprocessTime);
+               double *postprocessTime, bool single);
 
   void CropImg(const cv::Mat &img, std::vector<cv::Mat> &crop_img,
                std::vector<RESULT> &results,
                std::vector<std::vector<float>> &center_bs,
                std::vector<std::vector<float>> &scale_bs,
                float expandratio = 0.2);
-  void FindMaxRect(std::vector<RESULT> *results, std::vector<RESULT> &rect_buff, int findnum);
+  void FindMaxRect(std::vector<RESULT> *results, std::vector<RESULT> &rect_buff, bool single);
   float get_threshold() { return scoreThreshold_; };
 
 private:

@@ -200,7 +200,7 @@ bool Pipeline::Process(int inTexureId, int outTextureId, int textureWidth,
   std::vector<RESULT_KEYPOINT> results_kpts;
   detector_keypoint_->Predict(rgbaImage, &results, &results_kpts,
                               &preprocessTime_kpts, &predictTime_kpts,
-                              &postprocessTime_kpts);
+                              &postprocessTime_kpts, single);
 
   // Visualize the objects to the origin image
 //  VisualizeResults(results, &rgbaImage);
