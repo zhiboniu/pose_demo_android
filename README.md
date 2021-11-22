@@ -2,7 +2,9 @@
 pose demo on android mobile based on PaddleDetection
 
 本工程Android部分基于[Paddle-Lite-Demo](https://github.com/PaddlePaddle/Paddle-Lite-Demo)修改。
+
 算法模型基于[PaddleDetection](https://github.com/PaddlePaddle/PaddleDetection)的[PP-TinyPose](https://github.com/PaddlePaddle/PaddleDetection/tree/develop/configs/keypoint/tiny_pose).
+
 如欲获取更多详情，请点击链接至相应repo中查看。
 
 
@@ -10,8 +12,10 @@ pose demo on android mobile based on PaddleDetection
 ## APP安装体验
 * Andoird APP[下载体验](https://paddledet.bj.bcebos.com/deploy/paddlelite/PP_TinyPose.apk)
 * 安装二维码：
-![image]（pictures/PP-TinyPose_download.png）
 
+<div align="left">
+  <img src="./pictures/PP-TinyPose_download.png" width='200'/>
+</div>
 
 
 
