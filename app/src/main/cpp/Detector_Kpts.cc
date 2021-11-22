@@ -118,7 +118,7 @@ void Detector_KeyPoint::Predict(const cv::Mat &rgbaImage,
                                 std::vector<RESULT> *results,
                                 std::vector<RESULT_KEYPOINT> *results_kpts,
                                 double *preprocessTime, double *predictTime,
-                                double *postprocessTime) {
+                                double *postprocessTime, bool single) {
   if (results->empty())
     return;
   auto t = GetCurrentTime();
@@ -126,7 +126,7 @@ void Detector_KeyPoint::Predict(const cv::Mat &rgbaImage,
   std::vector<std::vector<float>> scale_bs;
   std::vector<cv::Mat> cropimgs;
   std::vector<RESULT> sresult;
-  FindMaxRect(results, sresult, 2);
+  FindMaxRect(results, sresult, single);
   CropImg(rgbaImage, cropimgs, sresult, center_bs, scale_bs);
   t = GetCurrentTime();
   Preprocess(cropimgs);
@@ -144,7 +144,11 @@ void Detector_KeyPoint::Predict(const cv::Mat &rgbaImage,
   LOGD("Detector_KeyPoint postprocess costs %f ms", *postprocessTime);
 }
 
-void Detector_KeyPoint::FindMaxRect(std::vector<RESULT> *results, std::vector<RESULT> &rect_buff, int findnum) {
+void Detector_KeyPoint::FindMaxRect(std::vector<RESULT> *results, std::vector<RESULT> &rect_buff, bool single) {
+  int findnum = 2;
+  if (single) {
+    findnum = 1;
+  }
   std::set<int> findset;
   for (int i=0; i<findnum; i++) {
     int maxid = 0;
