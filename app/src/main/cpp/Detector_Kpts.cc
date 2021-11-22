@@ -69,7 +69,7 @@ void Detector_KeyPoint::Preprocess(std::vector<cv::Mat> &bs_images) {
     cv::Mat resizedRGBImage;
     cv::cvtColor(resizedRGBAImage, resizedRGBImage, cv::COLOR_BGRA2RGB);
 
-    resizedRGBImage.convertTo(resizedRGBImage, CV_32FC3, 1.0/1.f);
+    resizedRGBImage.convertTo(resizedRGBImage, CV_32FC3, 1.0f);
     auto dst_inptr = inputData + i * (3 * inputHeight_ * inputWidth_);
     Permute(&resizedRGBImage, dst_inptr);
 //    NHWC3ToNC3HW(reinterpret_cast<const float *>(resizedRGBImage.data),
