@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:tools="http://schemas.android.com/tools"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/colorBackground">
+
+    <ImageView
+            android:id="@+id/pplogo"
+            android:layout_width="140dp"
+            android:layout_height="70dp"
+            android:src="@drawable/logo"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginLeft="24dp" android:layout_marginStart="24dp" tools:ignore="MissingConstraints"
+            app:layout_constraintTop_toTopOf="parent"/>
+    <TextView
+            android:layout_width="176dp"
+            android:layout_height="wrap_content"
+            android:text="飞桨健身房"
+            android:textColor="#ffffff"
+            android:textStyle="bold"
+            android:textSize="32sp"
+            android:layout_gravity="center_horizontal"
+
+            app:layout_constraintStart_toEndOf="@+id/pplogo"
+            app:layout_constraintTop_toTopOf="parent" android:layout_marginLeft="28dp"
+            android:layout_marginTop="16dp" android:layout_marginStart="28dp"/>
+    <RelativeLayout
+            android:id="@+id/main_select_singlemode"
+            android:layout_width="363dp"
+            android:layout_height="561dp"
+            android:background="@drawable/ss"
+            android:layout_margin="20dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="多种运动姿势"
+                android:textColor="#545F60"
+                android:textStyle="bold"
+                android:textSize="25sp"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentBottom="true"
+                android:padding="40dp"
+        />
+
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="智能化计数"
+                android:textColor="#545F60"
+                android:textStyle="bold"
+                android:textSize="22sp"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentBottom="true"
+                android:padding="20dp"
+        />
+    </RelativeLayout>
+
+</android.support.constraint.ConstraintLayout>
