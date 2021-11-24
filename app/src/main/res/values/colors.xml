@@ -9,5 +9,6 @@
     <color name="colorText">#FFFFFFFF</color>
 
     <color name="colorButton">#FDA886</color>
+    <color name="colorDisabled">#AAAAAA</color>
     <color name="colorBackground">#BDD7EE</color>
 </resources>

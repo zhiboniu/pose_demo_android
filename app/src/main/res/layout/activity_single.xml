@@ -184,7 +184,7 @@
             <TextView android:layout_width="wrap_content"
                       android:layout_height="wrap_content"
                       android:id="@+id/overlay_text"
-                      android:textSize="70dp"
+                      android:textSize="60dp"
                       android:textColor="#FFFFFF"
                       android:textStyle="bold"
                       android:layout_centerInParent="true"
