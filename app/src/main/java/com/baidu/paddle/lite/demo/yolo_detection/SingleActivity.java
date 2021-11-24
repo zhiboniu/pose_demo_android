@@ -58,6 +58,10 @@ public class SingleActivity extends Activity implements View.OnClickListener, Ca
     private int timeSecond = 15;
     private TextView timeShow;
 
+    Button btnPause;
+    Button btnStop;
+    Button btnRemake;
+
     @Override
     protected void onCreate(Bundle savedInstanceBundle) {
         super.onCreate(savedInstanceBundle);
@@ -124,9 +128,9 @@ public class SingleActivity extends Activity implements View.OnClickListener, Ca
 
         //所有按钮
         Button btnStart = findViewById(R.id.start);
-        Button btnPause = findViewById(R.id.pause);
-        Button btnStop = findViewById(R.id.stop);
-        Button btnRemake = findViewById(R.id.remake);
+        btnPause = findViewById(R.id.pause);
+         btnStop = findViewById(R.id.stop);
+         btnRemake = findViewById(R.id.remake);
         Button btnAfterReplay = findViewById(R.id.after_replay);
         Button btnAfterHome = findViewById(R.id.after_home);
         View btnBack = findViewById(R.id.btn_back);
@@ -248,6 +252,7 @@ public class SingleActivity extends Activity implements View.OnClickListener, Ca
         time = getCountDownTimer(timeSecond * 1000L);
         timer.setText(timeSecond + "s");
         final String[] hint={"训练开始!","1","2","3","准备好了吗?"};
+        disableBtn();
         new CountDownTimer(5000, 1000) {
             @Override
             public void onTick(long l) {
@@ -262,11 +267,22 @@ public class SingleActivity extends Activity implements View.OnClickListener, Ca
                 actionCount = 0;
                 count.setText("0");
                 calories.setText("0cal");
+                enableBtn();
             }
         }.start();
         pageControl(2);
     }
+    private void disableBtn(){
+        btnPause.setEnabled(false);
+        btnStop.setEnabled(false);
+        btnRemake.setEnabled(false);
+    }
 
+    private void enableBtn(){
+        btnPause.setEnabled(true);
+        btnStop.setEnabled(true);
+        btnRemake.setEnabled(true);
+    }
     private void stop() {
         svPreview.releaseCamera();
         timer.setText("0s");
@@ -300,6 +316,8 @@ public class SingleActivity extends Activity implements View.OnClickListener, Ca
 
     private void remake() {
         Intent i = new Intent(SingleActivity.this,SingleActivity.class);
+        i.putExtra("pose", action_id[pose]);
+        i.putExtra("i", pose);
         finish();
         startActivity(i);
     }
