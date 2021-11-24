@@ -89,3 +89,23 @@ src/
 ```
 
 
+## 许可证书
+
+本项目的发布受[Apache 2.0 license](LICENSE)许可认证。
+
+
+## 贡献代码
+
+我们非常欢迎你可以为PaddleDetection提供代码，也十分感谢你的反馈。
+- 感谢[Shigure19](https://github.com/Shigure19)帮忙贡献Android前端代码。
+
+## 引用
+
+```
+@misc{ppdet2021,
+title={PaddleDetection, Object detection and instance segmentation toolkit based on PaddlePaddle.},
+author={PaddlePaddle Authors},
+howpublished = {\url{https://github.com/PaddlePaddle/PaddleDetection}},
+year={2021}
+}
+```
