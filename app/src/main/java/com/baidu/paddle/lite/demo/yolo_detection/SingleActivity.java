@@ -194,7 +194,6 @@ public class SingleActivity extends Activity implements View.OnClickListener, Ca
             afterPlayingControl.setVisibility(View.GONE);
             svPreview.setVisibility(View.GONE);
         } else if (page == 2) {
-
             playing = true;
             pausing = false;
             overlayText.setVisibility(View.VISIBLE);
@@ -203,6 +202,7 @@ public class SingleActivity extends Activity implements View.OnClickListener, Ca
             afterPlayingControl.setVisibility(View.GONE);
             svPreview.setVisibility(View.VISIBLE);
         } else if (page == 3) {
+            time.cancel();
             playing = false;
             pausing = false;
             overlayText.setVisibility(View.GONE);
@@ -246,16 +246,12 @@ public class SingleActivity extends Activity implements View.OnClickListener, Ca
 
     private void start() {
         time = getCountDownTimer(timeSecond * 1000L);
-        overlayText.setText("准备好了吗?");
         timer.setText(timeSecond + "s");
-        new CountDownTimer(4000, 1000) {
+        final String[] hint={"训练开始!","1","2","3","准备好了吗?"};
+        new CountDownTimer(5000, 1000) {
             @Override
             public void onTick(long l) {
-                if (l < 1000) {
-                    overlayText.setText("训练开始!");
-                } else {
-                    overlayText.setText(String.valueOf(String.valueOf(l / 1000).charAt(0)));
-                }
+                overlayText.setText(hint[(int) Math.floor(l/1000)]);
             }
 
             @Override
@@ -273,6 +269,7 @@ public class SingleActivity extends Activity implements View.OnClickListener, Ca
 
     private void stop() {
         svPreview.releaseCamera();
+        timer.setText("0s");
         TextView c = findViewById(R.id.total_count_text);
         c.setText("总计：" + actionCount);
         TextView k = findViewById(R.id.total_calories_text);
@@ -302,7 +299,9 @@ public class SingleActivity extends Activity implements View.OnClickListener, Ca
     }
 
     private void remake() {
-        pageControl(1);
+        Intent i = new Intent(SingleActivity.this,SingleActivity.class);
+        finish();
+        startActivity(i);
     }
 
     @Override
