@@ -15,16 +15,16 @@ public class MainActivity extends Activity implements View.OnClickListener {
     @Override
     protected void onCreate(Bundle savedInstanceBundle) {
         super.onCreate(savedInstanceBundle);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_main_s);
         initView();
     }
 
     private void initView() {
         View singleBtn = findViewById(R.id.main_select_singlemode);
-        View vsBtn = findViewById(R.id.main_select_vsmode);
+        //View vsBtn = findViewById(R.id.main_select_vsmode);
         View logo = findViewById(R.id.pplogo);
         singleBtn.setOnClickListener(this);
-        vsBtn.setOnClickListener(this);
+        //vsBtn.setOnClickListener(this);
         logo.setOnClickListener(this);
         clickedLogo = 0;
     }
@@ -41,9 +41,9 @@ public class MainActivity extends Activity implements View.OnClickListener {
                 break;
             case R.id.main_select_vsmode:
                 showToast("暂未开放，敬请期待！");
-                /**Intent j = new Intent(MainActivity.this, SelectActivity.class);
-                 j.putExtra("mode", "vs");
-                 startActivity(j);*/
+                Intent j = new Intent(MainActivity.this, SelectActivity.class);
+                j.putExtra("mode", "vs");
+                startActivity(j);
                 break;
             case R.id.pplogo:
                 clickedLogo++;
