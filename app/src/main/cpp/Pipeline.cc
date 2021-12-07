@@ -27,7 +27,7 @@ Pipeline::Pipeline(const std::string &modelDir, const std::string &labelPath,
                                scoreThreshold));
   detector_keypoint_.reset(
       new Detector_KeyPoint(modelDir, labelPath, cpuThreadNum, cpuPowerMode,
-                            96, 128, inputMean, inputStd, 0.2));
+                            192, 256, inputMean, inputStd, 0.2));
 }
 
 void Pipeline::VisualizeResults(const std::vector<RESULT> &results,
