@@ -154,6 +154,9 @@ void Detector_KeyPoint::FindMaxRect(std::vector<RESULT> *results, std::vector<RE
     int maxid = 0;
     for (int i = 0; i < results->size(); i++) {
       if (findset.count(i) > 0) {
+        if (i == 0) {
+          maxid = 1;
+        }
         continue;
       }
       if ((*results)[i].h + (*results)[i].w >
