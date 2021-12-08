@@ -204,7 +204,7 @@ bool Pipeline::Process(int inTexureId, int outTextureId, int textureWidth,
 
   // Visualize the objects to the origin image
 //  VisualizeResults(results, &rgbaImage);
-  VisualizeKptsResults(results, results_kpts, &rgbaImage, true);
+  VisualizeKptsResults(results, results_kpts, &rgbaImage, false);
 
   // Visualize the status(performance data) to the origin image
 //  VisualizeStatus(readGLFBOTime, writeGLTextureTime, preprocessTime+preprocessTime_kpts,
