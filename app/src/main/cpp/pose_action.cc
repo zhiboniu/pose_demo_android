@@ -40,7 +40,7 @@ void clear_action_count() {
   action_recs[1].action_count = 0;
   return;
 }
-float thres_conf = 0.2;
+float thres_conf = 0.3;
 
 int get_action_count(int recid) {
   return action_recs[recid].action_count;
@@ -76,14 +76,14 @@ int check_lateral_raise(std::vector<float> &kpts_sframe, int recid) {
   }
   if (xy_ratio < down_thres && action_recs[recid].mark) {
     action_recs[recid].latency += 1;
-    if (action_recs[recid].latency == 4) {
+    if (action_recs[recid].latency == 2) {
       action_recs[recid].mark = false;
       action_recs[recid].latency = 0;
     }
   }
   else if(xy_ratio > up_thres && !(action_recs[recid].mark)) {
     action_recs[recid].latency += 1;
-    if (action_recs[recid].latency == 4) {
+    if (action_recs[recid].latency == 2) {
       action_recs[recid].action_count += 1;
       action_recs[recid].mark = true;
       action_recs[recid].latency = 0;
@@ -110,14 +110,14 @@ int check_stand_press(std::vector<float> &kpts_sframe, int recid) {
 
   if (xy_ratio && action_recs[recid].mark) {
     action_recs[recid].latency += 1;
-    if (action_recs[recid].latency == 4) {
+    if (action_recs[recid].latency == 2) {
       action_recs[recid].mark = false;
       action_recs[recid].latency = 0;
     }
   }
   else if(!xy_ratio && !(action_recs[recid].mark)) {
     action_recs[recid].latency += 1;
-    if (action_recs[recid].latency == 4) {
+    if (action_recs[recid].latency == 2) {
       action_recs[recid].action_count += 1;
       action_recs[recid].mark = true;
       action_recs[recid].latency = 0;
@@ -145,14 +145,14 @@ int check_deep_down(std::vector<float> &kpts_sframe, int recid) {
 
   if (xy_ratio && action_recs[recid].mark) {
     action_recs[recid].latency += 1;
-    if (action_recs[recid].latency == 4) {
+    if (action_recs[recid].latency == 2) {
       action_recs[recid].mark = false;
       action_recs[recid].latency = 0;
     }
   }
   else if(!xy_ratio && !(action_recs[recid].mark)) {
     action_recs[recid].latency += 1;
-    if (action_recs[recid].latency == 4) {
+    if (action_recs[recid].latency == 2) {
       action_recs[recid].action_count += 1;
       action_recs[recid].mark = true;
       action_recs[recid].latency = 0;
@@ -168,7 +168,7 @@ int check_deep_down2(std::vector<float> &kpts_sframe, float h, int recid) {
     return action_recs[recid].action_count;
   }
   float down_thres=0.12;
-  float up_thres=0.16;
+  float up_thres=0.14;
   float xy_ratio;
   if (kpts_sframe[kpts[0]*3] > thres_conf && kpts_sframe[kpts[1]*3] > thres_conf) {
     int ydiff = std::max(-kpts_sframe[kpts[0]*3 + 2] + kpts_sframe[kpts[1]*3 + 2], 0.f);
@@ -184,14 +184,14 @@ int check_deep_down2(std::vector<float> &kpts_sframe, float h, int recid) {
 
   if (xy_ratio<down_thres && action_recs[recid].mark) {
     action_recs[recid].latency += 1;
-    if (action_recs[recid].latency == 4) {
+    if (action_recs[recid].latency == 2) {
       action_recs[recid].mark = false;
       action_recs[recid].latency = 0;
     }
   }
   else if(xy_ratio>up_thres && !(action_recs[recid].mark)) {
     action_recs[recid].latency += 1;
-    if (action_recs[recid].latency == 4) {
+    if (action_recs[recid].latency == 2) {
       action_recs[recid].action_count += 1;
       action_recs[recid].mark = true;
       action_recs[recid].latency = 0;
@@ -232,18 +232,18 @@ void double_action_check(std::vector<RESULT_KEYPOINT> &results_kpts, std::vector
       if (results_kpts[i].keypoints[j*3] > 0.8) {
         if (results_kpts[i].keypoints[j*3 + 1] < imgw/2.) {
           left = results_kpts[i].keypoints;
-          lh = results[i].h;
+          lh = results_kpts[i].height;
           if (results_kpts.size() > 1) {
             right = results_kpts[1-i].keypoints;
-            rh = results[1-i].h;
+            rh = results_kpts[1-i].height;
           }
         }
         else {
           right = results_kpts[i].keypoints;
-          rh = results[1-i].h;
+          rh = results_kpts[i].height;
           if (results_kpts.size() > 1) {
             left = results_kpts[1-i].keypoints;
-            lh = results[i].h;
+            lh = results_kpts[1-i].height;
           }
         }
         break;
@@ -256,21 +256,20 @@ void double_action_check(std::vector<RESULT_KEYPOINT> &results_kpts, std::vector
   }
   if (left.empty() && right.empty() && results_kpts[maxid].keypoints[maxconf*3 + 1] < imgw/2.) {
     left = results_kpts[maxid].keypoints;
-    lh = results[maxid].h;
+    lh = results_kpts[maxid].height;
     if (results_kpts.size() > 1) {
       right = results_kpts[1-maxid].keypoints;
-      rh = results[1-maxid].h;
+      rh = results_kpts[1-maxid].height;
     }
   }
   else if(left.empty() && right.empty()) {
     right = results_kpts[maxid].keypoints;
-    rh = results[1-maxid].h;
+    rh = results_kpts[1-maxid].height;
     if (results_kpts.size() > 1) {
       left = results_kpts[1-maxid].keypoints;
-      lh = results[1-maxid].h;
+      lh = results_kpts[1-maxid].height;
     }
   }
-
   if (!left.empty()) {
     single_action_check(left, lh, actionid, 0);
   }
@@ -278,4 +277,3 @@ void double_action_check(std::vector<RESULT_KEYPOINT> &results_kpts, std::vector
     single_action_check(right, rh, actionid, 1);
   }
 }
-

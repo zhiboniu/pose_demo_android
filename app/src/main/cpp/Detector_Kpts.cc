@@ -104,6 +104,7 @@ void Detector_KeyPoint::Postprocess(std::vector<RESULT_KEYPOINT> *results,
                     scale_bs[batchid], preds, batchid, this->use_dark);
     RESULT_KEYPOINT result_item;
     result_item.num_joints = output_shape[1];
+    result_item.height = scale_bs[batchid][1];
     result_item.keypoints.clear();
     for (int i = 0; i < output_shape[1]; i++) {
       result_item.keypoints.emplace_back(preds[i * 3]);
@@ -145,9 +146,9 @@ void Detector_KeyPoint::Predict(const cv::Mat &rgbaImage,
 }
 
 void Detector_KeyPoint::FindMaxRect(std::vector<RESULT> *results, std::vector<RESULT> &rect_buff, bool single) {
-  int findnum = 2;
+  int findnum = std::min(2ul, results->size());
   if (single) {
-    findnum = 1;
+    findnum = std::min(1ul, results->size());
   }
   std::set<int> findset;
   for (int i=0; i<findnum; i++) {

@@ -165,7 +165,7 @@ void Pipeline::Action_Process(cv::Mat *rgbaImage,
     //2: check_stand_press
     //3: check_deep_down
     if (!results.empty()) {
-      action_count = single_action_check(results_kpts[0].keypoints, results[0].h*rgbaImage->rows, actionid, 0);
+      action_count = single_action_check(results_kpts[0].keypoints, results_kpts[0].height, actionid, 0);
     }
   }
   else {
@@ -204,7 +204,7 @@ bool Pipeline::Process(int inTexureId, int outTextureId, int textureWidth,
 
   // Visualize the objects to the origin image
 //  VisualizeResults(results, &rgbaImage);
-  VisualizeKptsResults(results, results_kpts, &rgbaImage, false);
+  VisualizeKptsResults(results, results_kpts, &rgbaImage, true);
 
   // Visualize the status(performance data) to the origin image
 //  VisualizeStatus(readGLFBOTime, writeGLTextureTime, preprocessTime+preprocessTime_kpts,

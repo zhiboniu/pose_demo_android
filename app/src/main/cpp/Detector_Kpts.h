@@ -30,6 +30,7 @@ struct RESULT_KEYPOINT {
   std::string class_name;
   int num_joints = 17;
   std::vector<float> keypoints;
+  int height = -1;
 };
 
 class Detector_KeyPoint {
