@@ -28,7 +28,7 @@
 
 struct RESULT_KEYPOINT {
   std::string class_name;
-  int num_joints = 17;
+  int num_joints = -1;
   std::vector<float> keypoints;
   int height = -1;
 };
@@ -70,4 +70,64 @@ private:
   float scoreThreshold_;
   std::vector<cv::Scalar> colorMap_;
   std::shared_ptr<paddle::lite_api::PaddlePredictor> predictor_keypoint_;
+};
+
+
+class PoseSmooth {
+public:
+  explicit PoseSmooth(const int width,
+                      const int height,
+                      std::string filter_type = "OneEuro",
+                      float alpha = 0.5,
+                      float fc_d = 0.1,
+                      float fc_min = 0.1,
+                      float beta = 0.1,
+                      float thres_mult = 0.3)
+      : width(width),
+        height(height),
+        alpha(alpha),
+        fc_d(fc_d),
+        fc_min(fc_min),
+        beta(beta),
+        filter_type(filter_type),
+        thres_mult(thres_mult){};
+
+  // Run predictor
+  RESULT_KEYPOINT smooth_process(RESULT_KEYPOINT* result);
+  void PointSmooth(RESULT_KEYPOINT* result,
+                   RESULT_KEYPOINT* keypoint_smoothed,
+                   std::vector<float> thresholds,
+                   int index);
+  float OneEuroFilter(float x_cur, float x_pre, int loc);
+  float smoothing_factor(float te, float fc);
+  float ExpSmoothing(float x_cur, float x_pre, int loc = 0);
+
+private:
+  int width = 0;
+  int height = 0;
+  float alpha = 0.;
+  float fc_d = 1.;
+  float fc_min = 0.;
+  float beta = 1.;
+  float thres_mult = 1.;
+  std::string filter_type = "OneEuro";
+  std::vector<float> thresholds = {0.005,
+                                   0.005,
+                                   0.005,
+                                   0.005,
+                                   0.005,
+                                   0.01,
+                                   0.01,
+                                   0.01,
+                                   0.01,
+                                   0.01,
+                                   0.01,
+                                   0.01,
+                                   0.01,
+                                   0.01,
+                                   0.01,
+                                   0.01,
+                                   0.01};
+  RESULT_KEYPOINT x_prev_hat;
+  RESULT_KEYPOINT dx_prev_hat;
 };

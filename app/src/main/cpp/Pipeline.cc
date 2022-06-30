@@ -28,6 +28,7 @@ Pipeline::Pipeline(const std::string &modelDir, const std::string &labelPath,
   detector_keypoint_.reset(
       new Detector_KeyPoint(modelDir, labelPath, cpuThreadNum, cpuPowerMode,
                             192, 256, inputMean, inputStd, 0.2));
+  smoother_.reset(new PoseSmooth(inputWidth, inputHeight));
 }
 
 void Pipeline::VisualizeResults(const std::vector<RESULT> &results,
@@ -201,9 +202,12 @@ bool Pipeline::Process(int inTexureId, int outTextureId, int textureWidth,
   detector_keypoint_->Predict(rgbaImage, &results, &results_kpts,
                               &preprocessTime_kpts, &predictTime_kpts,
                               &postprocessTime_kpts, single);
+  if (results_kpts.size()==1 and results_kpts[0].keypoints.size()>0) {
+    results_kpts[0]=smoother_->smooth_process(&(results_kpts[0]));
+  }
 
   // Visualize the objects to the origin image
-//  VisualizeResults(results, &rgbaImage);
+  VisualizeResults(results, &rgbaImage);
   VisualizeKptsResults(results, results_kpts, &rgbaImage, false);
 
   // Visualize the status(performance data) to the origin image
