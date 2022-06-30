@@ -228,3 +228,85 @@ void Detector_KeyPoint::CropImg(const cv::Mat &img,
     scale_bs.emplace_back(scale);
   }
 }
+
+
+// Run predictor
+RESULT_KEYPOINT PoseSmooth::smooth_process(RESULT_KEYPOINT* result) {
+  RESULT_KEYPOINT keypoint_smoothed = *result;
+  if (this->x_prev_hat.num_joints == -1) {
+    this->x_prev_hat = *result;
+    this->dx_prev_hat = *result;
+    std::fill(dx_prev_hat.keypoints.begin(), dx_prev_hat.keypoints.end(), 0.);
+    return keypoint_smoothed;
+  } else {
+    for (int i = 0; i < result->num_joints; i++) {
+      this->PointSmooth(result, &keypoint_smoothed, this->thresholds, i);
+    }
+    return keypoint_smoothed;
+  }
+}
+
+void PoseSmooth::PointSmooth(RESULT_KEYPOINT* result,
+                             RESULT_KEYPOINT* keypoint_smoothed,
+                             std::vector<float> thresholds,
+                             int index) {
+  float distance = sqrt(pow((result->keypoints[index * 3 + 1] -
+                             this->x_prev_hat.keypoints[index * 3 + 1]) /
+                            this->width,
+                            2) +
+                        pow((result->keypoints[index * 3 + 2] -
+                             this->x_prev_hat.keypoints[index * 3 + 2]) /
+                            this->height,
+                            2));
+  if (distance < thresholds[index] * this->thres_mult) {
+    keypoint_smoothed->keypoints[index * 3 + 1] =
+        this->x_prev_hat.keypoints[index * 3 + 1];
+    keypoint_smoothed->keypoints[index * 3 + 2] =
+        this->x_prev_hat.keypoints[index * 3 + 2];
+  } else {
+    if (this->filter_type == "OneEuro") {
+      keypoint_smoothed->keypoints[index * 3 + 1] =
+          this->OneEuroFilter(result->keypoints[index * 3 + 1],
+                              this->x_prev_hat.keypoints[index * 3 + 1],
+                              index * 3 + 1);
+      keypoint_smoothed->keypoints[index * 3 + 2] =
+          this->OneEuroFilter(result->keypoints[index * 3 + 2],
+                              this->x_prev_hat.keypoints[index * 3 + 2],
+                              index * 3 + 2);
+    } else {
+      keypoint_smoothed->keypoints[index * 3 + 1] =
+          this->ExpSmoothing(result->keypoints[index * 3 + 1],
+                             this->x_prev_hat.keypoints[index * 3 + 1],
+                             index * 3 + 1);
+      keypoint_smoothed->keypoints[index * 3 + 2] =
+          this->ExpSmoothing(result->keypoints[index * 3 + 2],
+                             this->x_prev_hat.keypoints[index * 3 + 2],
+                             index * 3 + 2);
+    }
+  }
+  return;
+}
+
+float PoseSmooth::OneEuroFilter(float x_cur, float x_pre, int loc) {
+  float te = 1.0;
+  this->alpha = this->smoothing_factor(te, this->fc_d);
+  float dx_cur = (x_cur - x_pre) / te;
+  float dx_cur_hat =
+      this->ExpSmoothing(dx_cur, this->dx_prev_hat.keypoints[loc]);
+
+  float fc = this->fc_min + this->beta * abs(dx_cur_hat);
+  this->alpha = this->smoothing_factor(te, fc);
+  float x_cur_hat = this->ExpSmoothing(x_cur, x_pre);
+  this->x_prev_hat.keypoints[loc] = x_cur_hat;
+  this->dx_prev_hat.keypoints[loc] = dx_cur_hat;
+  return x_cur_hat;
+}
+
+float PoseSmooth::smoothing_factor(float te, float fc) {
+  float r = 2 * 3.14 * fc * te;
+  return r / (r + 1);
+}
+
+float PoseSmooth::ExpSmoothing(float x_cur, float x_pre, int loc) {
+  return this->alpha * x_cur + (1 - this->alpha) * x_pre;
+}
