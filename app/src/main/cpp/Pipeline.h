@@ -86,4 +86,5 @@ private:
 private:
   std::shared_ptr<Detector> detector_;
   std::shared_ptr<Detector_KeyPoint> detector_keypoint_;
+  std::shared_ptr<PoseSmooth> smoother_;
 };
