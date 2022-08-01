@@ -10,17 +10,22 @@ pose demo on android mobile based on PaddleDetection
 
 
 ## APP安装体验
-* Andoird APP[下载体验](https://paddledet.bj.bcebos.com/deploy/paddlelite/PP_TinyPose.apk)
+* Andoird APP[下载体验](https://bj.bcebos.com/v1/paddledet/deploy/paddlelite/PP-TinyPose_v2.apk)
 * 安装二维码：
 
 <div align="left">
-  <img src="./pictures/PP-TinyPose_download.png" width='200'/>
+  <img src="./pictures/PP-TinyPose_download_v2.png" width='200'/>
 </div>
 
+
 安装问题解决：
+
 如果华为手机安装时提示`发现风险项（该应用为诈骗应用，请勿安装）`，该问题因华为手机有对外部应用的限制，可以按以下步骤解决：
+
 1. 控制中关闭纯净模式（如果有，一般在下拉栏）。
+
 2. 在设置-安全设置中，打开`外部来源应用下载`。关闭`外部来源应用检查`。
+
 如果找不到可以百度搜索查找详细信息。
 
 ## 下面部分为本工程使用介绍
@@ -55,7 +60,7 @@ export:
 
 2. 在`app/src/main/assets/models/yolov3_mobilenet_v3_for_cpu`路径下有**检测lite模型** `model_det.nb`、**关键点lite模型** `model_keypoint.nb` 。依次对应替换。
 3. 修改检测模型输入尺寸（默认320）。在`app/src/main/res/values/strings.xml`文件中修改`INPUT_WIDTH_DEFAULT`、`INPUT_HEIGHT_DEFAULT`两项为实际模型使用尺寸。
-4. 修改关键点模型尺寸（默认192(w)*256(h)）。在`app/src/main/cpp/Pipeline.cc`文件中L30行修改输入尺寸（w*h）。
+4. 修改关键点模型尺寸（默认192(w) x 256(h)）。在`app/src/main/cpp/Pipeline.cc`文件中L30行修改输入尺寸（w*h）。
 
 
 ## 更新到最新的预测库（仅在必要时，一般不需要）
