@@ -178,16 +178,14 @@ void Detector_KeyPoint::CropImg(const cv::Mat &img,
                                 std::vector<std::vector<float>> &center_bs,
                                 std::vector<std::vector<float>> &scale_bs,
                                 float expandratio) {
-  int w = img.cols;
-  int h = img.rows;
   for (int i = 0; i < std::min(int(results.size()), 2); i++) {
     auto area = results[i];
-    int crop_x1 = std::max(0, static_cast<int>(area.x * w));
-    int crop_y1 = std::max(0, static_cast<int>(area.y * h));
+    int crop_x1 = std::max(0, static_cast<int>(area.x));
+    int crop_y1 = std::max(0, static_cast<int>(area.y));
     int crop_x2 =
-        std::min(img.cols - 1, static_cast<int>((area.x + area.w) * w));
+        std::min(img.cols - 1, static_cast<int>((area.x + area.w)));
     int crop_y2 =
-        std::min(img.rows - 1, static_cast<int>((area.y + area.h) * h));
+        std::min(img.rows - 1, static_cast<int>((area.y + area.h)));
     int center_x = (crop_x1 + crop_x2) / 2.;
     int center_y = (crop_y1 + crop_y2) / 2.;
     int half_h = (crop_y2 - crop_y1) / 2.;

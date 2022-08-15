@@ -67,6 +67,8 @@ std::vector<cv::Scalar> Detector::GenerateColorMap(int numOfClasses) {
 
 void Detector::Preprocess(const cv::Mat &rgbaImage) {
   std::vector<int64_t> inputShape = {1, 3, inputHeight_, inputWidth_};
+  scale_height_ = static_cast<float>(inputHeight_) / static_cast<float>(rgbaImage.rows);
+  scale_width_ = static_cast<float>(inputWidth_) / static_cast<float>(rgbaImage.cols);
   auto input_names = predictor_->GetInputNames();
   for (const auto& tensor_name : input_names) {
     if (tensor_name == "image") {
@@ -93,17 +95,24 @@ void Detector::Preprocess(const cv::Mat &rgbaImage) {
       sizeData[0] = inputShape[3];
       sizeData[1] = inputShape[2];
     }
+    else if (tensor_name == "scale_factor") {
+      auto scaleTensor = predictor_->GetInputByName(tensor_name);
+      scaleTensor->Resize({1, 2});
+      auto* scale_data = scaleTensor->mutable_data<float>();
+      scale_data[0] = scale_height_;
+      scale_data[1] = scale_width_;
+    }
   }
 }
 
 void Detector::Postprocess(std::vector<RESULT> *results) {
   // TODO: Unified model output.
+  int num_class = 80;
+  int reg_max = 7;
+  auto output_names = predictor_->GetOutputNames();
   if (arch_ == "PicoDet") {
     std::vector<const float *> output_data_list_;
     output_data_list_.clear();
-    int num_class = 80;
-    int reg_max = 7;
-    auto output_names = predictor_->GetOutputNames();
     for (int i = 0; i < output_names.size(); i++) {
       auto output_tensor = predictor_->GetTensor(output_names[i]);
       const float *outptr = output_tensor->data<float>();
@@ -119,38 +128,34 @@ void Detector::Postprocess(std::vector<RESULT> *results) {
 
     //
     std::vector<float> im_shape_ = {static_cast<float>(inputHeight_), static_cast<float>(inputWidth_)};
-    std::vector<float> scale_factor_ = {static_cast<float>(inputHeight_), static_cast<float>(inputWidth_)};
+    std::vector<float> scale_factor_ = {scale_height_, scale_width_};
     PicoDetPostProcess(results, output_data_list_, fpn_stride_,
                        im_shape_, scale_factor_,
                        score_threshold, nms_threshold, num_class, reg_max);
   } else {
-    auto outputTensor = predictor_->GetOutput(0);
-    auto outputData = outputTensor->data<float>();
-    auto outputShape = outputTensor->shape();
-    int outputSize = ShapeProduction(outputShape);
-    for (int i = 0; i < outputSize; i += 6) {
-      // Class id
-      auto class_id = static_cast<int>(round(outputData[i]));
-      // Confidence score
-      auto score = outputData[i + 1];
-      if (class_id != 0)
-        continue;
-      if (score < scoreThreshold_)
-        continue;
-      RESULT object;
-      object.class_name = class_id >= 0 && class_id < labelList_.size()
-                              ? labelList_[class_id]
-                              : "Unknow";
-      object.fill_color = class_id >= 0 && class_id < colorMap_.size()
-                              ? colorMap_[class_id]
-                              : cv::Scalar(0, 0, 0);
-      object.score = score;
-      object.x = outputData[i + 2] / inputWidth_;
-      object.y = outputData[i + 3] / inputHeight_;
-      object.w = (outputData[i + 4] - outputData[i + 2] + 1) / inputWidth_;
-      object.h = (outputData[i + 5] - outputData[i + 3] + 1) / inputHeight_;
-      results->push_back(object);
+    auto output_tensor = predictor_->GetTensor(output_names[0]);
+    auto output_shape = output_tensor->shape();
+    auto out_bbox_num = predictor_->GetTensor(output_names[1]);
+    auto out_bbox_num_shape = out_bbox_num->shape();
+    // Calculate output length
+    int output_size = 1;
+    for (int j = 0; j < output_shape.size(); ++j) {
+      output_size *= output_shape[j];
     }
+
+    output_data_.resize(output_size);
+    std::copy_n(
+        output_tensor->mutable_data<float>(), output_size, output_data_.data());
+
+    int out_bbox_num_size = 1;
+    for (int j = 0; j < out_bbox_num_shape.size(); ++j) {
+      out_bbox_num_size *= out_bbox_num_shape[j];
+    }
+    out_bbox_num_data_.resize(out_bbox_num_size);
+    std::copy_n(out_bbox_num->mutable_data<int>(),
+                out_bbox_num_size,
+                out_bbox_num_data_.data());
+    NormalPostprocess(1, results, out_bbox_num_data_);
   }
 }
 
@@ -287,6 +292,43 @@ void Detector::PicoDetPostProcess(std::vector<RESULT> *results,
       box.h = box.h / scale_factor[0];
       results->push_back(box);
     }
+  }
+}
+
+void Detector::NormalPostprocess(const int batchsize,
+                       std::vector<RESULT>* result,
+                       std::vector<int> bbox_num) {
+  result->clear();
+  int start_idx = 0;
+  for (int im_id = 0; im_id < batchsize; im_id++) {
+    int rh = 1;
+    int rw = 1;
+    for (int j = start_idx; j < start_idx + bbox_num[im_id]; j++) {
+      // Class id
+      int class_id = static_cast<int>(round(output_data_[0 + j * 6]));
+      // Confidence score
+      float score = output_data_[1 + j * 6];
+      if (score < score_threshold) {
+        continue;
+      }
+
+      int xmin = (output_data_[2 + j * 6] * rw);
+      int ymin = (output_data_[3 + j * 6] * rh);
+      int xmax = (output_data_[4 + j * 6] * rw);
+      int ymax = (output_data_[5 + j * 6] * rh);
+      int wd = xmax - xmin;
+      int hd = ymax - ymin;
+
+      RESULT result_item;
+      result_item.x = xmin;
+      result_item.y = ymin;
+      result_item.h = hd;
+      result_item.w = wd;
+      result_item.class_id = class_id;
+      result_item.score = score;
+      result->push_back(result_item);
+    }
+    start_idx += bbox_num[im_id];
   }
 }
 

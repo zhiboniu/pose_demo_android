@@ -38,7 +38,7 @@ void Pipeline::VisualizeResults(const std::vector<RESULT> &results,
   for (int i = 0; i < results.size(); i++) {
     RESULT object = results[i];
     cv::Rect boundingBox =
-        cv::Rect(object.x * w, object.y * h, object.w * w, object.h * h) &
+        cv::Rect(object.x, object.y, object.w, object.h) &
         cv::Rect(0, 0, w - 1, h - 1);
     // Configure text size
     std::string text = object.class_name + " ";
@@ -69,7 +69,7 @@ void Pipeline::VisualizeKptsResults(
     for (int i = 0; i < results.size(); i++) {
       RESULT object = results[i];
       cv::Rect boundingBox =
-          cv::Rect(object.x * w, object.y * h, object.w * w, object.h * h) &
+          cv::Rect(object.x, object.y, object.w, object.h) &
           cv::Rect(0, 0, w - 1, h - 1);
       // Configure text size
       std::string text = object.class_name + " ";
@@ -188,39 +188,43 @@ bool Pipeline::Process(int inTexureId, int outTextureId, int textureWidth,
   CreateRGBAImageFromGLFBOTexture(textureWidth, textureHeight, &rgbaImage,
                                   &readGLFBOTime);
 
-  // Feed the image, run inference and parse the results
-  if (idx % 1 == 0 or results.empty()) {
-    idx = 0;
-    results.clear();
-    detector_->Predict(rgbaImage, &results, &preprocessTime, &predictTime,
-                       &postprocessTime);
+  if(!rgbaImage.empty())
+  {
+    // Feed the image, run inference and parse the results
+    if (idx % 3 == 0 or results.empty()) {
+      idx = 0;
+      results.clear();
+      detector_->Predict(rgbaImage, &results, &preprocessTime, &predictTime,
+                         &postprocessTime);
+    }
+    idx++;
+
+    // add keypoint pipeline
+      std::vector<RESULT_KEYPOINT> results_kpts;
+      detector_keypoint_->Predict(rgbaImage, &results, &results_kpts,
+                                  &preprocessTime_kpts, &predictTime_kpts,
+                                  &postprocessTime_kpts, single);
+      if (results_kpts.size()==1 and results_kpts[0].keypoints.size()>0) {
+        results_kpts[0]=smoother_->smooth_process(&(results_kpts[0]));
+      }
+
+//     Visualize the objects to the origin image
+//      VisualizeResults(results, &rgbaImage);
+      VisualizeKptsResults(results, results_kpts, &rgbaImage, true);
+
+    // Visualize the status(performance data) to the origin image
+//      VisualizeStatus(readGLFBOTime, writeGLTextureTime, preprocessTime+preprocessTime_kpts,
+//                      predictTime+predictTime_kpts, postprocessTime+postprocessTime_kpts, &rgbaImage, results_kpts, results);
+      Action_Process(&rgbaImage, results_kpts, results, actionid, single, textureWidth);
+
+    // Dump modified image if savedImagePath is set
+    if (!savedImagePath.empty()) {
+      cv::Mat bgrImage;
+      cv::cvtColor(rgbaImage, bgrImage, cv::COLOR_RGBA2BGR);
+      imwrite(savedImagePath, bgrImage);
+    }
   }
-  idx++;
 
-  // add keypoint pipeline
-  std::vector<RESULT_KEYPOINT> results_kpts;
-  detector_keypoint_->Predict(rgbaImage, &results, &results_kpts,
-                              &preprocessTime_kpts, &predictTime_kpts,
-                              &postprocessTime_kpts, single);
-  if (results_kpts.size()==1 and results_kpts[0].keypoints.size()>0) {
-    results_kpts[0]=smoother_->smooth_process(&(results_kpts[0]));
-  }
-
-  // Visualize the objects to the origin image
-  VisualizeResults(results, &rgbaImage);
-  VisualizeKptsResults(results, results_kpts, &rgbaImage, false);
-
-  // Visualize the status(performance data) to the origin image
-//  VisualizeStatus(readGLFBOTime, writeGLTextureTime, preprocessTime+preprocessTime_kpts,
-//                  predictTime+predictTime_kpts, postprocessTime+postprocessTime_kpts, &rgbaImage, results_kpts, results);
-  Action_Process(&rgbaImage, results_kpts, results, actionid, single, textureWidth);
-
-  // Dump modified image if savedImagePath is set
-  if (!savedImagePath.empty()) {
-    cv::Mat bgrImage;
-    cv::cvtColor(rgbaImage, bgrImage, cv::COLOR_RGBA2BGR);
-    imwrite(savedImagePath, bgrImage);
-  }
 
   // Write back to texture2D
   WriteRGBAImageBackToGLTexture(rgbaImage, outTextureId, &writeGLTextureTime);
