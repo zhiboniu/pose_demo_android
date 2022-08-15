@@ -10,11 +10,11 @@ pose demo on android mobile based on PaddleDetection
 
 
 ## APP安装体验
-* Andoird APP[下载体验](https://bj.bcebos.com/v1/paddledet/deploy/paddlelite/PP-TinyPose_v2.apk)
+* Andoird APP[下载体验](https://bj.bcebos.com/v1/paddledet/deploy/paddlelite/PP-TinyPose_v3.apk)
 * 安装二维码：
 
 <div align="left">
-  <img src="./pictures/PP-TinyPose_download_v2.png" width='200'/>
+  <img src="./pictures/PP-TinyPose_download_v3.png" width='200'/>
 </div>
 
 
@@ -49,15 +49,7 @@ $ git clone https://github.com/zhiboniu/pose_demo_android
 
 ## 更换自己的模型
 
-1. 使用自己训练的模型，根据PaddleDetection中[lite部署文档](https://github.com/PaddlePaddle/PaddleDetection/tree/release/2.4/deploy/lite)导出模型并转换为lite模型格式（.nb格式的模型）。导出时在config文件中TestReader栏增加`fuse_normalize: true`，将预处理normalize融合进模型。picodet模型还需在config文件中增加以下行：
-
-```
-export:
-  post_process: False  # Whether post-processing is included in the network when export model.
-  nms: False           # Whether NMS is included in the network when export model.
-  benchmark: True    # It is used to testing model performance, if set `True`, post-process and NMS will not be exported.
-```
-
+1. 使用自己训练的模型，根据PaddleDetection中[lite部署文档](https://github.com/PaddlePaddle/PaddleDetection/tree/release/2.4/deploy/lite)导出模型并转换为lite模型格式（.nb格式的模型）。导出时在config文件中TestReader栏增加`fuse_normalize: true`，将预处理normalize融合进模型。
 2. 在`app/src/main/assets/models/yolov3_mobilenet_v3_for_cpu`路径下有**检测lite模型** `model_det.nb`、**关键点lite模型** `model_keypoint.nb` 。依次对应替换。
 3. 修改检测模型输入尺寸（默认320）。在`app/src/main/res/values/strings.xml`文件中修改`INPUT_WIDTH_DEFAULT`、`INPUT_HEIGHT_DEFAULT`两项为实际模型使用尺寸。
 4. 修改关键点模型尺寸（默认192(w) x 256(h)）。在`app/src/main/cpp/Pipeline.cc`文件中L30行修改输入尺寸（w*h）。
