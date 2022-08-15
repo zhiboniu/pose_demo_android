@@ -63,17 +63,25 @@ private:
                           std::vector<float> scale_factor,
                           float score_threshold, float nms_threshold,
                           int num_class, int reg_max);
+  void NormalPostprocess(const int batchsize,
+                         std::vector<RESULT>* result,
+                         std::vector<int> bbox_num);
+
 private:
   int inputWidth_;
   int inputHeight_;
+  float scale_width_;
+  float scale_height_;
   std::vector<float> inputMean_;
   std::vector<float> inputStd_;
+  std::vector<float> output_data_;
+  std::vector<int> out_bbox_num_data_;
   float scoreThreshold_;
   std::vector<std::string> labelList_;
   std::vector<cv::Scalar> colorMap_;
   std::shared_ptr<paddle::lite_api::PaddlePredictor> predictor_;
   //
-  std::string arch_ = "PicoDet";
+  std::string arch_ = "Det";
   std::vector<int> fpn_stride_ = {8, 16, 32, 64};
   float score_threshold = 0.7;
   float nms_threshold = 0.5;
